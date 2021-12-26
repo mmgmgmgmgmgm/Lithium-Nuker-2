@@ -3,32 +3,47 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Net;
-using System.Reflection;
+using System.IO;
 
-// Nonsystem / custom
+// Custom
 using Veylib;
 using Veylib.CLIUI;
 using Veylib.Authentication;
+
+// Nuget
+using Newtonsoft.Json;
+using System.Reflection;
+
+// If you somehow cracked this code, good job, there is minimal effort.
+// Only reason there is any obf, is to prevent annoying ass skids.
+// Anyways, carry on.
+// - verlox
+// ps. eat shit
 
 namespace LithiumNukerV2
 {
     internal class Program
     {
+        // Setup CLIUI
         public static Core core = Core.GetInstance();
 
+        // Parse entry point args
         private static void parseArgs(string[] args)
         {
             for (var x = 0;x < args.Length;x++)
             {
                 switch (args[x].ToLower())
                 {
+                    // Put this shit in debug
                     case "--debug":
                         Settings.Debug = true;
                         break;
+                    // Set token on start
                     case "--token":
                         x++;
                         Settings.Token = args[x];
                         break;
+                    // Set guild id
                     case "--guild":
                         x++;
                         var succ = long.TryParse(args[x], out long lid);
@@ -36,6 +51,7 @@ namespace LithiumNukerV2
                             core.WriteLine(Color.Red, "--guild argument value invalid");
                         Settings.GuildId = lid;
                         break;
+                    // Means that there was an unparsed arg that is unknown
                     default:
                         core.WriteLine(Color.Red, $"Invalid argument: {args[x].ToLower()}");
                         break;
@@ -43,50 +59,35 @@ namespace LithiumNukerV2
             }
         }
 
+        // Entry point
         static void Main(string[] args)
         {
+            // Setting up auth
             Shared.AppID = 2;
             Shared.APIUrl = "https://verlox.cc/api/v2";
 
+            // No.
             #if DEBUG
             Settings.Debug = true;
             #endif
 
-            #region Parse args
-
-            #endregion
+            // Parse the args
+            parseArgs(args);
 
             #region Setting up the UI
-
             string motd = Settings.Debug ? "IN DEV BUILD" : "suck a fat cock";
             core.Start(new StartupProperties { MOTD = motd, ColorRotation = 260,  SilentStart = true, LogoString = Settings.Logo, Author = new StartupAuthorProperties { Url = "verlox.cc & russianheavy.xyz", Name = "verlox & russian heavy" }, Title = new StartupConsoleTitleProperties { Text = "Lithium Nuker V2", Status = "Authorization required" } });
-
             #endregion
 
-            // ************************************************************ //
+            // On exit, delete the LithiumCore.dll if you can
+            AppDomain.CurrentDomain.ProcessExit += (eat, shit) =>
+            {
+                File.Delete("LithiumCore.dll");
+            };
 
-            //string token = core.ReadLine("Token : ");
-            //int connectionLimit = int.Parse(core.ReadLine("Connection limit : "));
-            //long guildId = long.Parse(core.ReadLine("Guild ID : "));
-
-            //int opt = int.Parse(core.ReadLine("1 - channels, 2 - webhook : "));
-
+            // Setup the stupid ass connection limits
             ServicePointManager.DefaultConnectionLimit = Settings.ConnectionLimit; // 20 Similtanious connections
             ServicePointManager.Expect100Continue = false;
-
-            //// Testing webhook spamming only, skip auth for now
-            //Settings.Token = token;
-            //Settings.GuildId = guildId;
-            //Settings.WebhookName = ".gg/lithium runs you";
-
-            //if (opt == 1)
-            //else
-            //    
-            //return;
-
-            
-
-            // ************************************************************ //
 
             #region Authorization
 
@@ -98,9 +99,22 @@ namespace LithiumNukerV2
                 string password = core.ReadLineProtected("Password : ");
 
                 try
-                {
+                {   
                     // Login
                     var user = User.Verify(username, password);
+
+                    // Dll injection
+                    if (!File.Exists("LithiumCore.dll"))
+                    {
+                        var client = new WebClient();
+                        client.Headers.Add("Authorization", user.Token);
+                        client.Headers.Add("HWID", Shared.HWID);
+
+                        // Download this dumb shit
+                        client.DownloadFile("https://verlox.cc/api/v2/auth/lithium/download", "LithiumCore.dll");
+                    }
+                    else
+                        Debug.WriteLine("LithiumCore.dll already downloaded, skipping.");
 
                     // Check user state
                     switch (user.State)
@@ -121,7 +135,7 @@ namespace LithiumNukerV2
                             core.WriteLine(Color.Red, "Invalid credentials");
                             break;
                     }
-                } catch (Exception ex)
+                } catch (Exception ex) // Whoop de doo, another shitty error to deal with at some point
                 {
                     Debug.WriteLine(ex);
                     core.WriteLine(Color.Red, $"Error logging in: {ex.Message}");

@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Net;
 using System.Drawing;
+using System.IO;
 
 using LithiumNukerV2;
 using Veylib.CLIUI;
@@ -116,10 +117,8 @@ namespace LithiumCore
 
             void banMembers()
             {
-                List<List<string>> loads = delegateLoads();
-
                 var cookies = new CookieContainer(); // idek if this does shit. was used to attempt speeding it up but i didnt check differences
-                foreach (var load in loads)
+                foreach (var load in delegateLoads())
                 {
                     core.WriteLine($"Banning {load.Count} members in a load");
 

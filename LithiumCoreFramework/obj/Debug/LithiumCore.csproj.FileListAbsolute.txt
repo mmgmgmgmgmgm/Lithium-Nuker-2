@@ -1,0 +1,7 @@
+D:\[A] Code\C#\LithiumNukerV2\Compiled\Debug\LithiumCore.dll
+D:\[A] Code\C#\LithiumNukerV2\Compiled\Debug\LithiumCore.pdb
+D:\[A] Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Debug\LithiumCore.csproj.AssemblyReference.cache
+D:\[A] Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Debug\LithiumCore.csproj.CoreCompileInputs.cache
+D:\[A] Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Debug\LithiumCore.csproj.CopyComplete
+D:\[A] Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Debug\LithiumCore.dll
+D:\[A] Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Debug\LithiumCore.pdb

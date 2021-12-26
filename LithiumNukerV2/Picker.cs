@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Text.RegularExpressions;
 
 using Veylib.CLIUI;
 using LithiumCore;
@@ -15,11 +16,58 @@ namespace LithiumNukerV2
         public static Core core = Core.GetInstance();
 
         // Components
-        public static Channels channels = new Channels();
-        public static Webhooks webhooks = new Webhooks();
+        private static Channels channels = new Channels();
+        private static Webhooks webhooks = new Webhooks();
+        private static Bot bot = new Bot();
 
         public static void Choose()
         {
+        EnterToken:
+
+            core.Clear();
+
+            var regex = new Regex(@"[\w-]{24}.[\w-]{6}.[\w-]{27}");
+            string token = core.ReadLine("Token : ");
+
+            if (regex.Match(token).Length == 0)
+            {
+                core.WriteLine(Color.Red, "Input does not conform to token format.");
+                core.Delay(2500);
+                goto EnterToken;
+            }
+            else
+            {
+                // Test token
+                if (!bot.TestToken(token))
+                {
+                    core.WriteLine(Color.Red, "Invalid bot token.");
+                    core.Delay(2500);
+                    goto EnterToken;
+                }
+                else
+                    Settings.Token = token;
+            }
+
+        EnterGuildId:
+
+            core.Clear();
+
+            bool success = long.TryParse(core.ReadLine("Guild ID : "), out long gid);
+            if (!success)
+            {
+                core.WriteLine(Color.Red, "Guild ID couldn't be parsed.");
+                core.Delay(2500);
+                goto EnterGuildId;
+            } else
+            {
+                if (!bot.IsInGuild(gid))
+                {
+                    core.WriteLine(Color.Red, "Bot is not in guild.");
+                    core.Delay(2500);
+                    goto EnterGuildId;
+                }
+            }
+
             while (true)
             {
                 core.Clear();
