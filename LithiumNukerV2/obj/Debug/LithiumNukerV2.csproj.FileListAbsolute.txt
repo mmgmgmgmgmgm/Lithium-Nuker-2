@@ -1,0 +1,17 @@
+D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\bin\Debug\LithiumNukerV2.exe.config
+D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\bin\Debug\LithiumNukerV2.exe
+D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\bin\Debug\LithiumNukerV2.pdb
+D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\bin\Debug\Veylib.dll
+D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\bin\Debug\Newtonsoft.Json.dll
+D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\bin\Debug\Veylib.pdb
+D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\obj\Debug\LithiumNukerV2.csproj.AssemblyReference.cache
+D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\obj\Debug\LithiumNukerV2.csproj.SuggestedBindingRedirects.cache
+D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\obj\Debug\LithiumNukerV2.csproj.CoreCompileInputs.cache
+D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\obj\Debug\LithiumNukerV2.csproj.CopyComplete
+D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\obj\Debug\LithiumNukerV2.exe
+D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\obj\Debug\LithiumNukerV2.pdb
+D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\bin\Debug\LithiumCore.dll
+D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\bin\Debug\LithiumCore.pdb
+D:\[A] Code\C#\LithiumNukerV2\Compiled\Debug\LithiumNukerV2.exe.config
+D:\[A] Code\C#\LithiumNukerV2\Compiled\Debug\LithiumNukerV2.exe
+D:\[A] Code\C#\LithiumNukerV2\Compiled\Debug\LithiumNukerV2.pdb

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LithiumNukerV2", "LithiumNukerV2\LithiumNukerV2.csproj", "{62BB3EBA-F95E-4362-BA1D-72DAC7D8B02D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LithiumCore", "LithiumCore\LithiumCore.csproj", "{12B09F53-52C3-4C89-9E76-50D5149C79DF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{62BB3EBA-F95E-4362-BA1D-72DAC7D8B02D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62BB3EBA-F95E-4362-BA1D-72DAC7D8B02D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62BB3EBA-F95E-4362-BA1D-72DAC7D8B02D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62BB3EBA-F95E-4362-BA1D-72DAC7D8B02D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12B09F53-52C3-4C89-9E76-50D5149C79DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12B09F53-52C3-4C89-9E76-50D5149C79DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12B09F53-52C3-4C89-9E76-50D5149C79DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12B09F53-52C3-4C89-9E76-50D5149C79DF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3A150C67-5FBD-49F8-8ECB-FA2CF4F9024F}
+	EndGlobalSection
+EndGlobal
