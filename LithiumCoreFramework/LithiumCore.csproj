@@ -41,19 +41,17 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="Veylib">
-      <HintPath>..\Compiled\Veylib.dll</HintPath>
+      <HintPath>..\..\Veylib\Veylib\bin\Release\Veylib.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\LithiumNukerV2\Settings.cs">
-      <Link>Settings.cs</Link>
-    </Compile>
     <Compile Include="..\LithiumNukerV2\WorkController.cs">
       <Link>WorkController.cs</Link>
     </Compile>
     <Compile Include="Bot.cs" />
     <Compile Include="Channels.cs" />
     <Compile Include="Exceptions.cs" />
+    <Compile Include="Init.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Users.cs" />
     <Compile Include="Webhooks.cs" />

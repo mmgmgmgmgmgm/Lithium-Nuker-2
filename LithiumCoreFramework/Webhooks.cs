@@ -16,6 +16,16 @@ namespace LithiumCore
 {
     public partial class Webhooks
     {
+        private string token;
+        private long guildId;
+        private int threads;
+        public Webhooks(string tok, long gid, int threadCount)
+        {
+            token = tok;
+            guildId = gid;
+            threads = threadCount;
+        }
+
         public Core core = Core.GetInstance();
 
         public class Webhook
@@ -48,27 +58,27 @@ namespace LithiumCore
             var whs = new List<Webhook>();
 
             if (channels == null)
-                channels = new Channels().GetAll();
+                channels = new Channels(token, guildId, threads).GetAll();
 
             foreach (var chan in channels)
-                foreach (var whsChan in chan.GetWebhooks())
+                foreach (var whsChan in chan.GetWebhooks(token))
                     whs.Add(whsChan);
 
             return whs;
         }
 
 
-        public Webhook Create(long channelId)
+        public Webhook Create(string token, string whName, long channelId)
         {
             // Basic req shit
             var req = WebRequest.Create($"https://discord.com/api/v9/channels/{channelId}/webhooks");
             req.Method = "POST";
             req.ContentType = "application/json";
-            req.Headers.Add("Authorization", $"Bot {Settings.Token}");
+            req.Headers.Add("Authorization", $"Bot {token}");
 
             // Create json as a dynamic
             dynamic jsonBody = new ExpandoObject();
-            jsonBody.name = Settings.WebhookName;
+            jsonBody.name = whName;
 
             // Write body
             byte[] body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jsonBody));
@@ -93,7 +103,7 @@ namespace LithiumCore
             try
             {
                 var wh = new Webhook(json);
-                core.WriteLine(Color.Green, $"Created webhook {Settings.WebhookName} in {channelId}");
+                core.WriteLine(Color.Lime, $"Created webhook {whName} in {channelId}");
                 return wh;
             } catch (Exception ex)
             {
@@ -103,29 +113,29 @@ namespace LithiumCore
             return null;
         }
 
-        public void SendLoop(List<Webhook> webhooks)
+        public void SendLoop(string token, string avUrl, List<Webhook> webhooks)
         {
             while (true)
             {
                 foreach (var wh in webhooks)
                 {
-                    Send(wh.Url);
+                    Send(token, avUrl, wh.Url);
                 }
             }
         }
 
-        public void Send(string whUrl)
+        public void Send(string token, string avUrl, string whUrl)
         {
             var req = WebRequest.Create(whUrl);
             req.Method = "POST";
             req.ContentType = "application/json";
-            req.Headers.Add("Authorization", $"Bot {Settings.Token}");
+            req.Headers.Add("Authorization", $"Bot {token}");
             req.Proxy = null;
 
             dynamic jsonBody = new ExpandoObject();
             jsonBody.username = Name;
             jsonBody.content = Content;
-            jsonBody.avatar_url = Settings.AvatarUrl;
+            jsonBody.avatar_url = avUrl;
 
             byte[] body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jsonBody));
             req.GetRequestStream().Write(body, 0, body.Length);
@@ -147,9 +157,9 @@ namespace LithiumCore
             System.Diagnostics.Debug.WriteLine(raw);
         }
 
-        public void Spam(string content)
+        public void Spam(string whName, string avUrl, string content)
         {
-            var channels = new Channels().GetAll();
+            var channels = new Channels(token, guildId, threads).GetAll();
             var webhooks = new List<Webhook>();
 
             Content = content;
@@ -157,7 +167,7 @@ namespace LithiumCore
             var preWhs = GetAll();
 
             foreach (var prewh in preWhs)
-                if (prewh.Name == Settings.WebhookName)
+                if (prewh.Name == whName)
                     webhooks.Add(prewh);
 
             // Create a webhook for each channel
@@ -166,17 +176,17 @@ namespace LithiumCore
             {
                 if (chan.Type == Channels.Type.Text && webhooks.FindAll(wh => wh.ChannelId == chan.Id).Count == 0)
                 {
-                    var wh = Create(chan.Id);
+                    var wh = Create(token, whName, chan.Id);
                     if (wh != null)
                         webhooks.Add(wh);
                 }
             }
 
             // Create work loads
-            var loads = new WorkController().Seperate(webhooks.Cast<dynamic>().ToList());
+            var loads = new WorkController().Seperate(webhooks.Cast<dynamic>().ToList(), threads);
 
             foreach (var load in loads)
-                new Thread(() => { SendLoop(load.Cast<Webhook>().ToList()); }).Start();
+                new Thread(() => { SendLoop(token, avUrl, load.Cast<Webhook>().ToList()); }).Start();
         }
     }
 }

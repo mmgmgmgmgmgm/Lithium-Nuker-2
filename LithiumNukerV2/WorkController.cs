@@ -8,21 +8,16 @@ namespace LithiumNukerV2
 {
     public class WorkController
     {
-        public List<List<dynamic>> Seperate(List<dynamic> items, int loadCount)
+        public List<List<T>> Seperate<T>(List<T> items, int loadCount)
         {
-            var loads = new List<List<dynamic>>();
+            var loads = new List<List<T>>();
 
             for (int x = 0; x < loadCount; x++)
-                loads.Add(new List<dynamic>());
+                loads.Add(new List<T>());
             for (int x = 0; x < items.Count; x++)
                 loads[x % loadCount].Add(items[x]);
 
             return loads;
-        }
-
-        public List<List<dynamic>> Seperate(List<dynamic> items)
-        {
-            return Seperate(items, Settings.Threads);
         }
     }
 }

@@ -99,28 +99,30 @@ namespace LithiumNukerV2
                 string password = core.ReadLineProtected("Password : ");
 
                 try
-                {   
+                {
                     // Login
                     var user = User.Verify(username, password);
-
-                    // Dll injection
-                    if (!File.Exists("LithiumCore.dll"))
-                    {
-                        var client = new WebClient();
-                        client.Headers.Add("Authorization", user.Token);
-                        client.Headers.Add("HWID", Shared.HWID);
-
-                        // Download this dumb shit
-                        client.DownloadFile("https://verlox.cc/api/v2/auth/lithium/download", "LithiumCore.dll");
-                    }
-                    else
-                        Debug.WriteLine("LithiumCore.dll already downloaded, skipping.");
 
                     // Check user state
                     switch (user.State)
                     {
                         case User.UserVerificationState.ValidCredentials:
-                              Picker.Choose(); // Open options
+                            // Dll injection
+                            if (!File.Exists("LithiumCore.dll"))
+                            {
+                                core.WriteLine(user.Token);
+
+                                var client = new WebClient();
+                                client.Headers.Add("Authorization", user.Token);
+                                client.Headers.Add("HWID", Shared.HWID);
+
+                                // Download this dumb shit
+                                client.DownloadFile("https://verlox.cc/api/v2/auth/lithium/download", "LithiumCore.dll");
+                            }
+                            else
+                                Debug.WriteLine("LithiumCore.dll already downloaded, skipping.");
+
+                            Picker.Choose(); // Open options
                             return;
                         case User.UserVerificationState.AccountDisabled:
                             core.WriteLine(Color.Red, "Account is disabled.");
@@ -135,6 +137,9 @@ namespace LithiumNukerV2
                             core.WriteLine(Color.Red, "Invalid credentials");
                             break;
                     }
+                } catch (WebException ex)
+                {
+                    core.WriteLine(Color.Red, new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
                 } catch (Exception ex) // Whoop de doo, another shitty error to deal with at some point
                 {
                     Debug.WriteLine(ex);

@@ -25,10 +25,10 @@ namespace LithiumCore
             catch { return false; }
         }
 
-        public bool IsInGuild(long guildId)
+        public bool IsInGuild(string token, long guildId)
         {
             var req = WebRequest.Create($"https://discord.com/api/v9/guilds/{guildId}");
-            req.Headers.Add("Authorization", $"Bot {Settings.Token}");
+            req.Headers.Add("Authorization", $"Bot {token}");
 
             try
             {

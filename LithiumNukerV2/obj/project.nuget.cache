@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "F8rKGw8OtH3AELg0lceV33TmKL1Nb36JKW9raDkJpJNstwT1dDaMqmHUBO/fssCM12DaxUvamhRArFQznZhkrQ==",
+  "dgSpecHash": "oG1P/C7PnYNbIQD+riWBDeXy/7CdWIrYNYbH5m88BsdNNyL3ylAGR1oUgD+IXgBoWy65EkXzFG8pfLsjMq54/A==",
   "success": true,
-  "projectFilePath": "C:\\Users\\corrupted\\Desktop\\Lithium\\LithiumNukerV2\\LithiumNukerV2.csproj",
+  "projectFilePath": "D:\\[A] Code\\C#\\LithiumNukerV2\\LithiumNukerV2\\LithiumNukerV2.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\corrupted\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
+    "C:\\Users\\Steve\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
   ],
   "logs": []
 }

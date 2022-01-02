@@ -14,6 +14,16 @@ namespace LithiumCore
 {
     public class Channels
     {
+        private string token;
+        private long guildId;
+        private int threads;
+        public Channels(string tok, long gid, int threadCount)
+        {
+            token = tok;
+            guildId = gid;
+            threads = threadCount;
+        }
+
         public enum Type
         {
             Voice,
@@ -53,12 +63,12 @@ namespace LithiumCore
             public string Name;
             public dynamic _raw;
 
-            public List<Webhooks.Webhook> GetWebhooks()
+            public List<Webhooks.Webhook> GetWebhooks(string token)
             {
                 var whs = new List<Webhooks.Webhook>();
 
                 var req = WebRequest.Create($"https://discord.com/api/v9/channels/{Id}/webhooks");
-                req.Headers.Add("Authorization", $"Bot {Settings.Token}");
+                req.Headers.Add("Authorization", $"Bot {token}");
                 req.Proxy = null;
 
                 string raw;
@@ -97,8 +107,8 @@ namespace LithiumCore
             var channels = new List<Channel>();
 
             // Create the request
-            var req = WebRequest.Create($"https://discord.com/api/v9/guilds/{Settings.GuildId}/channels");
-            req.Headers.Add("Authorization", $"Bot {Settings.Token}");
+            var req = WebRequest.Create($"https://discord.com/api/v9/guilds/{guildId}/channels");
+            req.Headers.Add("Authorization", $"Bot {token}");
             req.Proxy = null;
             
             // Setup return vars
@@ -132,11 +142,10 @@ namespace LithiumCore
 
         public Channel Create(string name, Type type)
         {
-            System.Diagnostics.Debug.WriteLine("create ran");
-            var req = WebRequest.Create($"https://discord.com/api/v9/guilds/{Settings.GuildId}/channels");
+            var req = WebRequest.Create($"https://discord.com/api/v9/guilds/{guildId}/channels");
             req.Method = "POST";
             req.ContentType = "application/json";
-            req.Headers.Add("Authorization", $"Bot {Settings.Token}");
+            req.Headers.Add("Authorization", $"Bot {token}");
             req.Proxy = null;
 
             dynamic jsonBody = new ExpandoObject();
@@ -190,13 +199,13 @@ namespace LithiumCore
 
             var channels = new List<Channel>();
 
-            for (var x = 0; x < (count < Settings.Threads ? count : Settings.Threads); x++)
+            for (var x = 0; x < (count < threads ? count : threads); x++)
             {
                 new Thread(() =>
                 {
-                    for (var y = 0; (y - 1) < (count / (count < Settings.Threads ? count : Settings.Threads)); y++)
+                    for (var y = 0; (y - 1) < (count / (count < threads ? count : threads)); y++)
                     {
-                        System.Diagnostics.Debug.WriteLine($"{(count / (count < Settings.Threads ? count : Settings.Threads))} Revs");
+                        System.Diagnostics.Debug.WriteLine($"{(count / (count < threads ? count : threads))} Revs");
                         channels.Add(Create(name, type));
                     }
                 }).Start();

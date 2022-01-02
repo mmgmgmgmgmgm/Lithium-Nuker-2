@@ -16,8 +16,8 @@ namespace LithiumNukerV2
         public static Core core = Core.GetInstance();
 
         // Components
-        private static Channels channels = new Channels();
-        private static Webhooks webhooks = new Webhooks();
+        private static Channels channels;
+        private static Webhooks webhooks;
         private static Bot bot = new Bot();
 
         public static void Choose()
@@ -60,13 +60,18 @@ namespace LithiumNukerV2
                 goto EnterGuildId;
             } else
             {
-                if (!bot.IsInGuild(gid))
+                if (!bot.IsInGuild(Settings.Token, gid))
                 {
                     core.WriteLine(Color.Red, "Bot is not in guild.");
                     core.Delay(2500);
                     goto EnterGuildId;
                 }
+                else
+                    Settings.GuildId = gid;
             }
+
+            channels = new Channels(Settings.Token, Settings.GuildId, Settings.Threads);
+            webhooks = new Webhooks(Settings.Token, Settings.GuildId, Settings.Threads);
 
             while (true)
             {
@@ -75,7 +80,7 @@ namespace LithiumNukerV2
                 var table = new AsciiTable(new AsciiTable.Properties { Colors = new AsciiTable.ColorProperties { RainbowDividers = true } });
                 table.AddColumn("1 - Create channels");
                 table.AddColumn("2 - Webhook spam channels");
-                table.AddColumn("3 - Ban all");
+                //table.AddColumn("3 - Ban all");
 
                 table.WriteTable();
 
@@ -96,9 +101,9 @@ namespace LithiumNukerV2
                     case 2:
                         whSpam();
                         break;
-                    case 3:
+                    /*case 3:
                         banAll();
-                        break;
+                        break;*/
                     default:
                         core.WriteLine("Invalid choice");
                         core.Delay(2500);
@@ -133,7 +138,7 @@ namespace LithiumNukerV2
             if (content == "")
                 content = "@everyone discord.gg/lithium";
 
-            webhooks.Spam(content);
+            webhooks.Spam(Settings.WebhookName, Settings.AvatarUrl, content);
         }
 
         private static void banAll()
