@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Net;
 using System.IO;
+using System.Text;
+using Microsoft.Win32;
 
 // Custom
 using Veylib;
@@ -26,6 +28,8 @@ namespace LithiumNukerV2
     {
         // Setup CLIUI
         public static Core core = Core.GetInstance();
+
+        private static readonly string regPath = @"Software\Lithium";
 
         // Parse entry point args
         private static void parseArgs(string[] args)
@@ -56,6 +60,66 @@ namespace LithiumNukerV2
                         core.WriteLine(Color.Red, $"Invalid argument: {args[x].ToLower()}");
                         break;
                 }
+            }
+        }
+
+        private static void login(string username, string password)
+        {
+            try
+            {
+                // Login
+                var user = User.Verify(username, password);
+
+                // Check user state
+                switch (user.State)
+                {
+                    case User.UserVerificationState.ValidCredentials:
+                        // Dll injection
+                        if (!File.Exists("LithiumCore.dll"))
+                        {
+                            core.WriteLine(user.Token);
+
+                            var client = new WebClient();
+                            client.Headers.Add("Authorization", user.Token);
+                            client.Headers.Add("HWID", Shared.HWID);
+
+                            // Download this dumb shit
+                            client.DownloadFile("https://verlox.cc/api/v2/auth/lithium/download", "LithiumCore.dll");
+                        }
+                        else
+                            Debug.WriteLine("LithiumCore.dll already downloaded, skipping.");
+
+                        // Save the login to registry (password as base64, eat shit idc)
+                        var key = Registry.CurrentUser.CreateSubKey(regPath);
+                        var b64p = Convert.ToBase64String(Encoding.UTF8.GetBytes(password));
+
+                        key.SetValue("username", username);
+                        key.SetValue("password", b64p);
+
+                        Picker.Choose(); // Open options
+                        return;
+                    case User.UserVerificationState.AccountDisabled:
+                        core.WriteLine(Color.Red, "Account is disabled.");
+                        break;
+                    case User.UserVerificationState.ApplicationDisabled:
+                        core.WriteLine(Color.Red, "Application is disabled.");
+                        break;
+                    case User.UserVerificationState.InvalidHWID:
+                        core.WriteLine(Color.Red, "HWID invalid.");
+                        break;
+                    case User.UserVerificationState.InvalidCredentials:
+                        core.WriteLine(Color.Red, "Invalid credentials");
+                        break;
+                }
+            }
+            catch (WebException ex)
+            {
+                core.WriteLine(Color.Red, new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
+            }
+            catch (Exception ex) // Whoop de doo, another shitty error to deal with at some point
+            {
+                Debug.WriteLine(ex);
+                core.WriteLine(Color.Red, $"Error logging in: {ex.Message}");
             }
         }
 
@@ -91,59 +155,26 @@ namespace LithiumNukerV2
 
             #region Authorization
 
-            // Do a while loop so that they have to login
-            while (true)
+            // Check for login in registry
+            var key = Registry.CurrentUser.OpenSubKey(regPath);
+            if (key != null)
             {
-                // Get creds
-                string username = core.ReadLine("Username : ");
-                string password = core.ReadLineProtected("Password : ");
+                string username = (string)key.GetValue("username");
+                string password = Encoding.UTF8.GetString(Convert.FromBase64String((string)key.GetValue("password")));
+                Debug.WriteLine(username + ":" + password);
 
-                try
+                login(username, password);
+            }
+            else
+            {
+                // Do a while loop so that they have to login
+                while (true)
                 {
-                    // Login
-                    var user = User.Verify(username, password);
+                    // Get creds
+                    string username = core.ReadLine("Username : ");
+                    string password = core.ReadLineProtected("Password : ");
 
-                    // Check user state
-                    switch (user.State)
-                    {
-                        case User.UserVerificationState.ValidCredentials:
-                            // Dll injection
-                            if (!File.Exists("LithiumCore.dll"))
-                            {
-                                core.WriteLine(user.Token);
-
-                                var client = new WebClient();
-                                client.Headers.Add("Authorization", user.Token);
-                                client.Headers.Add("HWID", Shared.HWID);
-
-                                // Download this dumb shit
-                                client.DownloadFile("https://verlox.cc/api/v2/auth/lithium/download", "LithiumCore.dll");
-                            }
-                            else
-                                Debug.WriteLine("LithiumCore.dll already downloaded, skipping.");
-
-                            Picker.Choose(); // Open options
-                            return;
-                        case User.UserVerificationState.AccountDisabled:
-                            core.WriteLine(Color.Red, "Account is disabled.");
-                            break;
-                        case User.UserVerificationState.ApplicationDisabled:
-                            core.WriteLine(Color.Red, "Application is disabled.");
-                            break;
-                        case User.UserVerificationState.InvalidHWID:
-                            core.WriteLine(Color.Red, "HWID invalid.");
-                            break;
-                        case User.UserVerificationState.InvalidCredentials:
-                            core.WriteLine(Color.Red, "Invalid credentials");
-                            break;
-                    }
-                } catch (WebException ex)
-                {
-                    core.WriteLine(Color.Red, new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
-                } catch (Exception ex) // Whoop de doo, another shitty error to deal with at some point
-                {
-                    Debug.WriteLine(ex);
-                    core.WriteLine(Color.Red, $"Error logging in: {ex.Message}");
+                    login(username, password);
                 }
             }
 
