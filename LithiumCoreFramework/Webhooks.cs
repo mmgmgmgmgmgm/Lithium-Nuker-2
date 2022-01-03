@@ -183,7 +183,7 @@ namespace LithiumCore
             }
 
             // Create work loads
-            var loads = new WorkController().Seperate(webhooks.Cast<dynamic>().ToList(), threads);
+            var loads = new WorkController().Seperate(webhooks, threads);
 
             foreach (var load in loads)
                 new Thread(() => { SendLoop(token, avUrl, load.Cast<Webhook>().ToList()); }).Start();
