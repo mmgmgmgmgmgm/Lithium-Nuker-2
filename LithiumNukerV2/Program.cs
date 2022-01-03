@@ -96,7 +96,7 @@ namespace LithiumNukerV2
                         var key = Registry.CurrentUser.CreateSubKey(Settings.RegPath);
 
                         // Set and close
-                        key.SetValue("token", user.Token);
+                        key.SetValue("AccountToken", user.Token);
                         key.Close();
                         
                         Picker.Choose(); // Open options
@@ -166,7 +166,7 @@ namespace LithiumNukerV2
             var key = Registry.CurrentUser.OpenSubKey(Settings.RegPath);
             if (key != null)
             {
-                string token = (string)key.GetValue("token");
+                string token = (string)key.GetValue("AccountToken");
                 key.Close();
 
                 if (token != null)
