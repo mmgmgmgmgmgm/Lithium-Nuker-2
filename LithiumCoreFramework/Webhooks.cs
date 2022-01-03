@@ -16,6 +16,9 @@ namespace LithiumCore
 {
     public partial class Webhooks
     {
+        public delegate void noret();
+        public static event noret Finished;
+
         private string token;
         private long guildId;
         private int threads;
@@ -113,9 +116,9 @@ namespace LithiumCore
             return null;
         }
 
-        public void SendLoop(string token, string avUrl, List<Webhook> webhooks)
+        public void SendLoop(string token, string avUrl, List<Webhook> webhooks, int amount)
         {
-            while (true)
+            for (var x =0;x < amount;x++)
             {
                 foreach (var wh in webhooks)
                 {
@@ -157,7 +160,7 @@ namespace LithiumCore
             System.Diagnostics.Debug.WriteLine(raw);
         }
 
-        public void Spam(string whName, string avUrl, string content)
+        public void Spam(string whName, string avUrl, string content, int amountEach)
         {
             var channels = new Channels(token, guildId, threads).GetAll();
             var webhooks = new List<Webhook>();
@@ -183,10 +186,19 @@ namespace LithiumCore
             }
 
             // Create work loads
-            var loads = new WorkController().Seperate(webhooks, threads);
+            var loads = WorkController.Seperate(webhooks, threads);
+            int finished = 0;
 
+            // Create threads and run
             foreach (var load in loads)
-                new Thread(() => { SendLoop(token, avUrl, load.Cast<Webhook>().ToList()); }).Start();
+                new Thread(() => { SendLoop(token, avUrl, load, amountEach); finished++; }).Start();
+
+            // Wait until fully finished
+            while (finished < loads.Count)
+                Thread.Sleep(20);
+
+            // Invoke finished event
+            Finished?.Invoke();
         }
     }
 }

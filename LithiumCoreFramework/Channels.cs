@@ -1,19 +1,29 @@
-﻿using System;
+﻿// Sys
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.IO;
 using System.Dynamic;
 using System.Text;
-using System.Linq;
 using System.Threading;
+using System.Drawing;
 
+// Custom
 using LithiumNukerV2;
+using Veylib.CLIUI;
+
+// Nuget
 using Newtonsoft.Json;
 
 namespace LithiumCore
 {
     public class Channels
     {
+        public delegate void noret();
+        public static event noret Finished;
+
+        private static Core core = Core.GetInstance();
+
         private string token;
         private long guildId;
         private int threads;
@@ -28,7 +38,8 @@ namespace LithiumCore
         {
             Voice,
             Text,
-            Stage
+            Stage,
+            Category
         }
 
         public class Channel
@@ -49,6 +60,9 @@ namespace LithiumCore
                         break;
                     case 2:
                         Type = Type.Voice;
+                        break;
+                    case 4:
+                        Type = Type.Category;
                         break;
                     case 13:
                         Type = Type.Stage;
@@ -93,6 +107,15 @@ namespace LithiumCore
                     whs.Add(new Webhooks.Webhook(wh));
 
                 return whs;
+            }
+
+            public void Delete(string token)
+            {
+                var req = WebRequest.Create($"https://discord.com/api/v9/channels/{Id}");
+                req.Method = "DELETE";
+                req.Headers.Add("Authorization", $"Bot {token}");
+                req.Headers.Add("X-Audit-Log-Reason", "lithium runs you");
+                var res = req.GetResponse();
             }
         }
 
@@ -159,7 +182,7 @@ namespace LithiumCore
                     break;
                 case Type.Voice:
                     jsonBody.type = 2;
-                    break;
+                    break;  
                 case Type.Stage:
                     jsonBody.type = 13;
                     break;
@@ -174,9 +197,11 @@ namespace LithiumCore
             try 
             {
                 raw = new StreamReader(req.GetResponse().GetResponseStream()).ReadToEnd();
+                core.WriteLine(Color.Lime, $"Created channel", "rainbow", name);
             } catch (WebException ex)
             {
                 raw = new StreamReader(ex.Response.GetResponseStream()).ReadToEnd();
+                core.WriteLine(Color.Red, $"Failed to create channel: {ex.Message}");
             }
 
             // Conversion and finising
@@ -212,6 +237,43 @@ namespace LithiumCore
             }
 
             return channels;
+        }
+
+        public void Nuke()
+        {
+            // Setup work loads
+            var channels = GetAll();
+            var loads = WorkController.Seperate(channels, threads);
+            var errors = new List<Exception>();
+            int finished = 0;
+
+            foreach (var load in loads)
+            {
+                // Create new thread
+                new Thread(() =>
+                {
+                    // Iterate thru sublist and delete each channel within
+                    foreach (var chan in load)
+                    {
+                        try
+                        {
+                            chan.Delete(token);
+                            core.WriteLine($"Deleted ", "rainbow", chan.Name);
+                        } catch (Exception ex)
+                        {
+                            errors.Add(ex);
+                            core.WriteLine(Color.Red, $"Failed to delete channel {chan.Name} ({chan.Id}): {ex.Message}");
+                        }
+                    }
+                    finished++;
+                }).Start();
+            }
+
+            while (finished < loads.Count)
+                Thread.Sleep(20);
+
+            core.WriteLine(Color.Lime, $"Finished nuking {channels.Count} channels");
+            Finished?.Invoke();
         }
     }
 }

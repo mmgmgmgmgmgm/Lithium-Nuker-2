@@ -51,7 +51,6 @@
     <Compile Include="Bot.cs" />
     <Compile Include="Channels.cs" />
     <Compile Include="Exceptions.cs" />
-    <Compile Include="Init.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Users.cs" />
     <Compile Include="Webhooks.cs" />

@@ -30,36 +30,6 @@ namespace LithiumNukerV2
         // Setup CLIUI
         public static Core core = Core.GetInstance();
 
-        private static void ExceptionReport(Exception ex, bool auto = true)
-        {
-            core.WriteLine("Creating exception report...");
-            Debug.WriteLine("Exception report time!");
-
-            var req = WebRequest.Create("https://verlox.cc/api/v2/auth/lithium/reporterror");
-            req.Method = "POST";
-            req.ContentType = "application/json";
-            req.Headers.Add("Authorization", User.CurrentUser.Token);
-            req.Headers.Add("HWID", Shared.HWID);
-
-            dynamic body = new ExpandoObject();
-            body.stacktrace = ex.StackTrace;
-            body.error = ex.Message;
-            body.auto = auto;
-
-            byte[] bodyBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(body));
-            req.GetRequestStream().Write(bodyBytes, 0, bodyBytes.Length);
-
-            try
-            {
-                dynamic json = JsonConvert.DeserializeObject(new StreamReader(req.GetResponse().GetResponseStream()).ReadToEnd());
-                if ((int)json.code == 200)
-                    core.WriteLine(Color.Lime, "Exception report successfully submitted");
-            } catch (Exception ex2)
-            {
-                core.WriteLine(Color.Red, $"Failed to send exception report: {ex2.Message}");
-            }
-        }
-
         // Parse entry point args
         private static void parseArgs(string[] args)
         {
@@ -125,8 +95,6 @@ namespace LithiumNukerV2
 
                         // Save the token to the registry
                         var key = Registry.CurrentUser.CreateSubKey(Settings.RegPath);
-
-                        // Set and close
                         key.SetValue("AccountToken", user.Token);
                         key.Close();
                         
@@ -150,12 +118,12 @@ namespace LithiumNukerV2
             }
             catch (WebException ex)
             {
-                ExceptionReport(ex);
+                LithiumShared.ExceptionReport(ex);
                 core.WriteLine("WebException! ", Color.Red, new StreamReader(ex.Response.GetResponseStream()).ReadToEnd().Replace("\n", " "));
             }
             catch (Exception ex) // Whoop de doo, another shitty error to deal with at some point
             {
-                ExceptionReport(ex);
+                LithiumShared.ExceptionReport(ex);
                 core.WriteLine(Color.Red, $"Error logging in: {ex.Message}");
             }
 
@@ -178,7 +146,7 @@ namespace LithiumNukerV2
             parseArgs(args);
 
             #region Setting up the UI
-            string motd = Settings.Debug ? "IN DEV BUILD" : "suck a fat cock";
+            string motd = Settings.Debug ? "Debug build | auto error reporting disabled." : "suck a fat cock";
             core.Start(new StartupProperties { MOTD = motd, ColorRotation = 260,  SilentStart = true, LogoString = Settings.Logo, DebugMode = Settings.Debug, Author = new StartupAuthorProperties { Url = "verlox.cc & russianheavy.xyz", Name = "verlox & russian heavy" }, Title = new StartupConsoleTitleProperties { Text = "Lithium Nuker V2", Status = "Authorization required" } });
             #endregion
 
