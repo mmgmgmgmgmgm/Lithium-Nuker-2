@@ -29,8 +29,6 @@ namespace LithiumNukerV2
         // Setup CLIUI
         public static Core core = Core.GetInstance();
 
-        private static readonly string regPath = @"Software\Lithium";
-
         // Parse entry point args
         private static void parseArgs(string[] args)
         {
@@ -63,12 +61,16 @@ namespace LithiumNukerV2
             }
         }
 
-        private static void login(string username, string password)
+        private static User.UserData login(string username, string password, string token = null)
         {
             try
             {
                 // Login
-                var user = User.Verify(username, password);
+                User.UserData user;
+                if (token != null)
+                    user = User.Verify(token);
+                else
+                    user = User.Verify(username, password);
 
                 // Check user state
                 switch (user.State)
@@ -79,6 +81,7 @@ namespace LithiumNukerV2
                         {
                             core.WriteLine(user.Token);
 
+                            // Web headers
                             var client = new WebClient();
                             client.Headers.Add("Authorization", user.Token);
                             client.Headers.Add("HWID", Shared.HWID);
@@ -89,15 +92,15 @@ namespace LithiumNukerV2
                         else
                             Debug.WriteLine("LithiumCore.dll already downloaded, skipping.");
 
-                        // Save the login to registry (password as base64, eat shit idc)
-                        var key = Registry.CurrentUser.CreateSubKey(regPath);
-                        var b64p = Convert.ToBase64String(Encoding.UTF8.GetBytes(password));
+                        // Save the token to the registry
+                        var key = Registry.CurrentUser.CreateSubKey(Settings.RegPath);
 
-                        key.SetValue("username", username);
-                        key.SetValue("password", b64p);
-
+                        // Set and close
+                        key.SetValue("token", user.Token);
+                        key.Close();
+                        
                         Picker.Choose(); // Open options
-                        return;
+                        break;
                     case User.UserVerificationState.AccountDisabled:
                         core.WriteLine(Color.Red, "Account is disabled.");
                         break;
@@ -111,6 +114,8 @@ namespace LithiumNukerV2
                         core.WriteLine(Color.Red, "Invalid credentials");
                         break;
                 }
+
+                return user;
             }
             catch (WebException ex)
             {
@@ -121,6 +126,8 @@ namespace LithiumNukerV2
                 Debug.WriteLine(ex);
                 core.WriteLine(Color.Red, $"Error logging in: {ex.Message}");
             }
+
+            return null;
         }
 
         // Entry point
@@ -140,7 +147,7 @@ namespace LithiumNukerV2
 
             #region Setting up the UI
             string motd = Settings.Debug ? "IN DEV BUILD" : "suck a fat cock";
-            core.Start(new StartupProperties { MOTD = motd, ColorRotation = 260,  SilentStart = true, LogoString = Settings.Logo, Author = new StartupAuthorProperties { Url = "verlox.cc & russianheavy.xyz", Name = "verlox & russian heavy" }, Title = new StartupConsoleTitleProperties { Text = "Lithium Nuker V2", Status = "Authorization required" } });
+            core.Start(new StartupProperties { MOTD = motd, ColorRotation = 260,  SilentStart = true, LogoString = Settings.Logo, DebugMode = Settings.Debug, Author = new StartupAuthorProperties { Url = "verlox.cc & russianheavy.xyz", Name = "verlox & russian heavy" }, Title = new StartupConsoleTitleProperties { Text = "Lithium Nuker V2", Status = "Authorization required" } });
             #endregion
 
             // On exit, delete the LithiumCore.dll if you can
@@ -156,26 +163,25 @@ namespace LithiumNukerV2
             #region Authorization
 
             // Check for login in registry
-            var key = Registry.CurrentUser.OpenSubKey(regPath);
+            var key = Registry.CurrentUser.OpenSubKey(Settings.RegPath);
             if (key != null)
             {
-                string username = (string)key.GetValue("username");
-                string password = Encoding.UTF8.GetString(Convert.FromBase64String((string)key.GetValue("password")));
-                Debug.WriteLine(username + ":" + password);
+                string token = (string)key.GetValue("token");
+                key.Close();
+
+                if (token != null)
+                    if (login(null, null, token).State == User.UserVerificationState.ValidCredentials)
+                        return;
+            }
+
+            // Do a while loop so that they have to login
+            while (true)
+            {
+                // Get creds
+                string username = core.ReadLine("Username : ");
+                string password = core.ReadLineProtected("Password : ");
 
                 login(username, password);
-            }
-            else
-            {
-                // Do a while loop so that they have to login
-                while (true)
-                {
-                    // Get creds
-                    string username = core.ReadLine("Username : ");
-                    string password = core.ReadLineProtected("Password : ");
-
-                    login(username, password);
-                }
             }
 
             #endregion
