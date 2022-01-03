@@ -1,6 +1,7 @@
 ﻿// System
 using System;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Drawing;
 using System.Net;
 using System.IO;
@@ -28,6 +29,36 @@ namespace LithiumNukerV2
     {
         // Setup CLIUI
         public static Core core = Core.GetInstance();
+
+        private static void ExceptionReport(Exception ex, bool auto = true)
+        {
+            core.WriteLine("Creating exception report...");
+            Debug.WriteLine("Exception report time!");
+
+            var req = WebRequest.Create("https://verlox.cc/api/v2/auth/lithium/reporterror");
+            req.Method = "POST";
+            req.ContentType = "application/json";
+            req.Headers.Add("Authorization", User.CurrentUser.Token);
+            req.Headers.Add("HWID", Shared.HWID);
+
+            dynamic body = new ExpandoObject();
+            body.stacktrace = ex.StackTrace;
+            body.error = ex.Message;
+            body.auto = auto;
+
+            byte[] bodyBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(body));
+            req.GetRequestStream().Write(bodyBytes, 0, bodyBytes.Length);
+
+            try
+            {
+                dynamic json = JsonConvert.DeserializeObject(new StreamReader(req.GetResponse().GetResponseStream()).ReadToEnd());
+                if ((int)json.code == 200)
+                    core.WriteLine(Color.Lime, "Exception report successfully submitted");
+            } catch (Exception ex2)
+            {
+                core.WriteLine(Color.Red, $"Failed to send exception report: {ex2.Message}");
+            }
+        }
 
         // Parse entry point args
         private static void parseArgs(string[] args)
@@ -119,11 +150,12 @@ namespace LithiumNukerV2
             }
             catch (WebException ex)
             {
-                core.WriteLine(Color.Red, new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
+                ExceptionReport(ex);
+                core.WriteLine("WebException! ", Color.Red, new StreamReader(ex.Response.GetResponseStream()).ReadToEnd().Replace("\n", " "));
             }
             catch (Exception ex) // Whoop de doo, another shitty error to deal with at some point
             {
-                Debug.WriteLine(ex);
+                ExceptionReport(ex);
                 core.WriteLine(Color.Red, $"Error logging in: {ex.Message}");
             }
 
@@ -150,17 +182,19 @@ namespace LithiumNukerV2
             core.Start(new StartupProperties { MOTD = motd, ColorRotation = 260,  SilentStart = true, LogoString = Settings.Logo, DebugMode = Settings.Debug, Author = new StartupAuthorProperties { Url = "verlox.cc & russianheavy.xyz", Name = "verlox & russian heavy" }, Title = new StartupConsoleTitleProperties { Text = "Lithium Nuker V2", Status = "Authorization required" } });
             #endregion
 
+            // Stupid fucking shit doesnt work anyways
             // On exit, delete the LithiumCore.dll if you can
-            AppDomain.CurrentDomain.ProcessExit += (eat, shit) =>
-            {
-                File.Delete("LithiumCore.dll");
-            };
+            //AppDomain.CurrentDomain.ProcessExit += (eat, shit) =>
+            //{
+            //    File.Delete("LithiumCore.dll");
+            //};
 
             // Setup the stupid ass connection limits
             ServicePointManager.DefaultConnectionLimit = Settings.ConnectionLimit; // 20 Similtanious connections
             ServicePointManager.Expect100Continue = false;
 
             #region Authorization
+            Auth:
 
             // Check for login in registry
             var key = Registry.CurrentUser.OpenSubKey(Settings.RegPath);
@@ -170,8 +204,14 @@ namespace LithiumNukerV2
                 key.Close();
 
                 if (token != null)
-                    if (login(null, null, token).State == User.UserVerificationState.ValidCredentials)
+                {
+                    var log = login(null, null, token);
+                    if (log == null)
+                    {
+                        goto Auth;
+                    } else if (log.State == User.UserVerificationState.ValidCredentials)
                         return;
+                }
             }
 
             // Do a while loop so that they have to login
