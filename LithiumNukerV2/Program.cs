@@ -35,6 +35,8 @@ namespace LithiumNukerV2
         {
             for (var x = 0;x < args.Length;x++)
             {
+                bool succ;
+
                 switch (args[x].ToLower())
                 {
                     // Put this shit in debug
@@ -49,10 +51,29 @@ namespace LithiumNukerV2
                     // Set guild id
                     case "--guild":
                         x++;
-                        var succ = long.TryParse(args[x], out long lid);
+                        succ = long.TryParse(args[x], out long lid);
                         if (!succ)
                             core.WriteLine(Color.Red, "--guild argument value invalid");
                         Settings.GuildId = lid;
+                        break;
+                    // Set threads
+                    case "--threads":
+                        x++;
+                        succ = int.TryParse(args[x], out int threads);
+                        if (!succ)
+                            core.WriteLine(Color.Red, "--threads argument value invalid");
+                        Settings.Threads = threads;
+                        break;
+                    // Set connection limit
+                    case "--connection-limit":
+                        x++;
+                        succ = int.TryParse(args[x], out int connlimit);
+                        if (!succ)
+                            core.WriteLine(Color.Red, "--connection-limit argument value invalid");
+                        Settings.ConnectionLimit = connlimit;
+                        break;
+                    case "--local-core":
+                        Settings.LocalCore = true;
                         break;
                     // Means that there was an unparsed arg that is unknown
                     default:
@@ -88,7 +109,11 @@ namespace LithiumNukerV2
                             client.Headers.Add("HWID", Shared.HWID);
 
                             // Download this dumb shit
-                            client.DownloadFile("https://verlox.cc/api/v2/auth/lithium/download", "LithiumCore.dll");
+                            if (!Settings.LocalCore)
+                            {
+                                var data = client.DownloadData("https://verlox.cc/api/v2/auth/lithium/download");
+                                Assembly.Load(data);
+                            }
                         }
                         else
                             Debug.WriteLine("LithiumCore.dll already downloaded, skipping.");
@@ -150,6 +175,26 @@ namespace LithiumNukerV2
             core.Start(new StartupProperties { MOTD = motd, ColorRotation = 260,  SilentStart = true, LogoString = Settings.Logo, DebugMode = Settings.Debug, Author = new StartupAuthorProperties { Url = "verlox.cc & russianheavy.xyz", Name = "verlox & russian heavy" }, Title = new StartupConsoleTitleProperties { Text = "Lithium Nuker V2", Status = "Authorization required" } });
             #endregion
 
+            // Check version
+            var v = Vars.Get("loader_version", -1);
+
+            if (v.State == Vars.VarState.Success)
+            {
+                var version = Version.Parse(v.Value);
+                if (version > LithiumShared.GetVersion())
+                {
+                    core.WriteLine(new MessageProperties { Label = new MessagePropertyLabel { Text = "fail" } }, "This client is outdated, download a new client from the Discord, press any key to close");
+                    Console.ReadKey();
+                    return;
+                }
+            }
+            else
+            {
+                core.WriteLine(new MessageProperties { Label = new MessagePropertyLabel { Text = "fail" } }, "Failed to check version, press any key to close");
+                Console.ReadKey();
+                return;
+            }
+
             // Stupid fucking shit doesnt work anyways
             // On exit, delete the LithiumCore.dll if you can
             //AppDomain.CurrentDomain.ProcessExit += (eat, shit) =>
@@ -158,7 +203,7 @@ namespace LithiumNukerV2
             //};
 
             // Setup the stupid ass connection limits
-            ServicePointManager.DefaultConnectionLimit = Settings.ConnectionLimit; // 20 Similtanious connections
+            ServicePointManager.DefaultConnectionLimit = Settings.ConnectionLimit;
             ServicePointManager.Expect100Continue = false;
 
             #region Authorization
