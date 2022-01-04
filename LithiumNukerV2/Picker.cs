@@ -1,4 +1,5 @@
 ﻿// System
+using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -217,10 +218,10 @@ namespace LithiumNukerV2
                 name = "ran by lithium";
 
             // Spam
-            channels.Spam(name, Channels.Type.Text, amnt);
+            channels.Spam(name, (Channels.Type)Enum.Parse(typeof(Channels.Type), type), amnt);
 
         }
-
+        
         private static void nukeChans()
         {
             // Nuke channels
