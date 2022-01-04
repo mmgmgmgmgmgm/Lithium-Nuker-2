@@ -3,6 +3,8 @@ using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.IO;
+using System.Net;
 
 // Custom
 using Veylib.CLIUI;
@@ -70,7 +72,7 @@ namespace LithiumNukerV2
             bool success = Settings.GuildId != null;
             long gid;
 
-        EnterGuildId:
+            EnterGuildId:
 
             // Clear console
             core.Clear();
@@ -79,7 +81,7 @@ namespace LithiumNukerV2
             if (!success)
                 success = long.TryParse(core.ReadLine("Guild ID : "), out gid);
             else
-                gid = Settings.GuildId;
+                gid = (long)Settings.GuildId;
     
             if (!success)
             {
@@ -100,13 +102,25 @@ namespace LithiumNukerV2
             }
 
             // Setup new instances
-            channels = new Channels(Settings.Token, Settings.GuildId, Settings.Threads);
-            webhooks = new Webhooks(Settings.Token, Settings.GuildId, Settings.Threads);
-            users = new Users(Settings.Token, Settings.GuildId, Settings.Threads);
+            channels = new Channels(Settings.Token, (long)Settings.GuildId, Settings.Threads);
+            webhooks = new Webhooks(Settings.Token, (long)Settings.GuildId, Settings.Threads);
+            users = new Users(Settings.Token, (long)Settings.GuildId, Settings.Threads);
 
             Channels.Finished += () => { pause = false; };
             Webhooks.Finished += () => { pause = false; };
             Users.Finished += () => { pause = false; };
+
+            // Create versions table
+            var vertable = new AsciiTable(new AsciiTable.Properties { Colors = new AsciiTable.ColorProperties { RainbowDividers = true } });
+            vertable.AddColumn($"Version - {LithiumShared.GetVersion()}");
+            vertable.AddColumn($"Core version - {LithiumShared.GetVersion(typeof(Bot).Assembly)}");
+
+            // Create options table
+            var optable = new AsciiTable(new AsciiTable.Properties { Colors = new AsciiTable.ColorProperties { RainbowDividers = true } });
+            optable.AddColumn("1 - Webhook spam channels");
+            optable.AddColumn("2 - Create channels");
+            optable.AddColumn("3 - Delete channels");
+            optable.AddRow("4 - Ban members");
 
             while (true)
             {
@@ -116,16 +130,9 @@ namespace LithiumNukerV2
                 // Clear console
                 core.Clear();
 
-                // Create options table
-                var table = new AsciiTable(new AsciiTable.Properties { Colors = new AsciiTable.ColorProperties { RainbowDividers = true } });
-                table.AddColumn("1 - Webhook spam channels");
-                table.AddColumn("2 - Create channels");
-                table.AddColumn("3 - Delete channels");
-                table.AddRow("4 - Ban members", "5 - ID banning");
-                //table.AddColumn("3 - Ban all");
-
-                // Print table
-                table.WriteTable();
+                // Print tables
+                vertable.WriteTable();
+                optable.WriteTable();
 
                 // Get the choice
                 var choice = core.ReadLine("Choice : ");
@@ -150,13 +157,10 @@ namespace LithiumNukerV2
                         createChans();
                         break;
                     case 3:
-                        nukeChans();
+                        channels.Nuke();
                         break;
                     case 4:
-                        users.BanAll();
-                        break;
-                    case 5:
-                        users.BanAll(true);
+                        banAll();
                         break;
                     default:
                         pause = false;
@@ -221,18 +225,24 @@ namespace LithiumNukerV2
             channels.Spam(name, (Channels.Type)Enum.Parse(typeof(Channels.Type), type), amnt);
 
         }
-        
-        private static void nukeChans()
-        {
-            // Nuke channels
-            channels.Nuke();
-
-            
-        }
 
         private static void banAll()
         {
-            
+            // User input
+            string inp = core.ReadLine("Ban IDs : [y/N]");
+            bool banIds;
+
+            // Input parsing
+            if (inp == "" || inp.ToLower() == "n")
+                banIds = false;
+            else
+                banIds = true;
+
+            // If banning ids, download the ids
+            if (banIds && !File.Exists("ids.txt"))
+                new WebClient().DownloadFile("https://lithium.verlox.cc/app/ids.txt", "ids.txt");
+
+            users.BanAll(banIds);
         }
     }
 }
