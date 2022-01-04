@@ -2,6 +2,10 @@
 .vscode/
 .git/
 
+*.user
+
 Compiled/
 LithiumCore/bin/
+LithiumCore/obj/
 LithiumNukerV2/bin/
+LithiumNukerV2/obj/
