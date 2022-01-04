@@ -14,6 +14,7 @@ using Veylib.Authentication;
 
 // Nuget
 using Newtonsoft.Json;
+using System.Reflection;
 
 namespace LithiumNukerV2
 {
@@ -56,6 +57,14 @@ namespace LithiumNukerV2
             {
                 core.WriteLine(Color.Red, $"Failed to send exception report: {ex2.Message}");
             }
+        }
+
+        public static Version GetVersion(Assembly sender = null)
+        {
+            if (sender == null)
+                sender = Assembly.GetCallingAssembly();
+
+            return sender.GetName().Version;
         }
     }
 }
