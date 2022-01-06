@@ -15,3 +15,12 @@ D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\bin\Debug\LithiumCore.pdb
 D:\[A] Code\C#\LithiumNukerV2\Compiled\Debug\LithiumNukerV2.exe.config
 D:\[A] Code\C#\LithiumNukerV2\Compiled\Debug\LithiumNukerV2.exe
 D:\[A] Code\C#\LithiumNukerV2\Compiled\Debug\LithiumNukerV2.pdb
+C:\Users\corrupted\Desktop\Lithium\LithiumNukerV2\obj\Debug\LithiumNukerV2.csproj.AssemblyReference.cache
+C:\Users\corrupted\Desktop\Lithium\LithiumNukerV2\obj\Debug\LithiumNukerV2.csproj.SuggestedBindingRedirects.cache
+C:\Users\corrupted\Desktop\Lithium\LithiumNukerV2\obj\Debug\LithiumNukerV2.csproj.CoreCompileInputs.cache
+C:\Users\corrupted\Desktop\Lithium\LithiumNukerV2\obj\Debug\LithiumNukerV2.exe
+C:\Users\corrupted\Desktop\Lithium\LithiumNukerV2\obj\Debug\LithiumNukerV2.pdb
+C:\Users\corrupted\Desktop\Lithium\Compiled\Debug\LithiumNukerV2.exe.config
+C:\Users\corrupted\Desktop\Lithium\Compiled\Debug\LithiumNukerV2.exe
+C:\Users\corrupted\Desktop\Lithium\Compiled\Debug\LithiumNukerV2.pdb
+C:\Users\corrupted\Desktop\Lithium\LithiumNukerV2\obj\Debug\LithiumNukerV2.csproj.CopyComplete

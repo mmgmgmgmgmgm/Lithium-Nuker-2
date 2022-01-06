@@ -5,3 +5,10 @@ D:\[A] Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Debug\LithiumCore.csproj.
 D:\[A] Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Debug\LithiumCore.csproj.CopyComplete
 D:\[A] Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Debug\LithiumCore.dll
 D:\[A] Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Debug\LithiumCore.pdb
+C:\Users\corrupted\Desktop\Lithium\LithiumCoreFramework\obj\Debug\LithiumCore.csproj.AssemblyReference.cache
+C:\Users\corrupted\Desktop\Lithium\LithiumCoreFramework\obj\Debug\LithiumCore.csproj.CoreCompileInputs.cache
+C:\Users\corrupted\Desktop\Lithium\LithiumCoreFramework\obj\Debug\LithiumCore.dll
+C:\Users\corrupted\Desktop\Lithium\LithiumCoreFramework\obj\Debug\LithiumCore.pdb
+C:\Users\corrupted\Desktop\Lithium\Compiled\Debug\LithiumCore.dll
+C:\Users\corrupted\Desktop\Lithium\Compiled\Debug\LithiumCore.pdb
+C:\Users\corrupted\Desktop\Lithium\LithiumCoreFramework\obj\Debug\LithiumCore.csproj.CopyComplete

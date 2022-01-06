@@ -44,6 +44,12 @@ namespace LithiumCore
 
         public class Channel
         {
+            // Placeholder only
+            public Channel()
+            {
+
+            }
+
             public Channel(dynamic raw)
             {
                 if (raw.message != null && raw.message == "You are being rate limited")
@@ -116,6 +122,7 @@ namespace LithiumCore
                 req.Headers.Add("Authorization", $"Bot {token}");
                 req.Headers.Add("X-Audit-Log-Reason", "lithium runs you");
                 var res = req.GetResponse();
+                res.Dispose();
             }
         }
 
@@ -171,33 +178,32 @@ namespace LithiumCore
             req.Headers.Add("Authorization", $"Bot {token}");
             req.Proxy = null;
 
-            dynamic jsonBody = new ExpandoObject();
-            jsonBody.name = name;
-            jsonBody.topic = "discord.gg/lithium | Lithium runs all.";
-            
+            // default to text
+            int chantype = 0;
             switch (type)
             {
-                case Type.Text:
-                    jsonBody.type = 0;
-                    break;
                 case Type.Voice:
-                    jsonBody.type = 2;
+                    chantype = 2;
                     break;  
                 case Type.Stage:
-                    jsonBody.type = 13;
+                    chantype = 13;
                     break;
             }
 
-            byte[] body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(jsonBody));
-            req.GetRequestStream().Write(body, 0, body.Length);
+            byte[] body = Encoding.UTF8.GetBytes("{ \"topic\": \"discord.gg/lith\", \"name\": \"" + name + "\", \"type\": " + chantype + " }");
+            var reqstr = req.GetRequestStream();
+            reqstr.Write(body, 0, body.Length);
+            reqstr.Dispose();
 
             string raw;
             dynamic json;
 
             try 
             {
-                raw = new StreamReader(req.GetResponse().GetResponseStream()).ReadToEnd();
-                core.WriteLine(Color.Lime, $"Created channel", "rainbow", name);
+                var res = req.GetResponse();
+                res.Close();
+                raw = new StreamReader(res.GetResponseStream()).ReadToEnd();
+                core.WriteLine("Created channel ", Color.White, name);
             } catch (WebException ex)
             {
                 raw = new StreamReader(ex.Response.GetResponseStream()).ReadToEnd();
@@ -224,17 +230,33 @@ namespace LithiumCore
 
             var channels = new List<Channel>();
 
-            for (var x = 0; x < (count < threads ? count : threads); x++)
+            for (var x =0;x < count; x++)
+                channels.Add(new Channel());
+
+            var loads = WorkController.Seperate(channels, threads);
+            int finished = 0;
+
+            channels.Clear();
+
+            foreach (var load in loads)
             {
                 new Thread(() =>
                 {
-                    for (var y = 0; (y - 1) < (count / (count < threads ? count : threads)); y++)
+                    for (var x = 0;x < load.Count;x++)
                     {
-                        System.Diagnostics.Debug.WriteLine($"{(count / (count < threads ? count : threads))} Revs");
-                        channels.Add(Create(name, type));
+                        try
+                        {
+                            var chan = Create(name, type);
+                            channels.Add(chan);
+                        }
+                        catch {  }
                     }
+                    finished++;
                 }).Start();
             }
+
+            while (finished < count)
+                Thread.Sleep(20);
 
             return channels;
         }
@@ -258,7 +280,7 @@ namespace LithiumCore
                         try
                         {
                             chan.Delete(token);
-                            core.WriteLine($"Deleted ", "rainbow", chan.Name);
+                            core.WriteLine($"Deleted ", Color.White, chan.Name);
                         } catch (Exception ex)
                         {
                             errors.Add(ex);

@@ -56,17 +56,7 @@ namespace LithiumNukerV2
                     goto EnterToken;
                 }
                 else
-                {
-                    // Disable because bugs and i got more pressin shit
-                    //var saveToken = core.ReadLine("Save token? [Y/n] ");
-                    //if (saveToken == "" || saveToken.ToLower() == "y")
-                    //{
-                    //    // Save the token to registry
-                    //    key.SetValue("BotToken", token);
-                    //    key.Close();
-                    //}
                     Settings.Token = token;
-                }
             }
 
             bool success = Settings.GuildId != null;
@@ -216,6 +206,8 @@ namespace LithiumNukerV2
                 core.WriteLine(Color.Red, "Invalid channel type");
                 return;
             }
+
+            type = type.Substring(0, 1).ToUpper() + type.Substring(1).ToLower();
 
             // Autofill name as this if blank
             if (name == "")
