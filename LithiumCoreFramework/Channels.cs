@@ -27,6 +27,7 @@ namespace LithiumCore
         private string token;
         private long guildId;
         private int threads;
+        private static readonly int timeout = 5 * 1000; // 5 seconds
         public Channels(string tok, long gid, int threadCount)
         {
             token = tok;
@@ -117,12 +118,18 @@ namespace LithiumCore
 
             public void Delete(string token)
             {
-                Retry:
+                int tries = 0;
+
+            Retry:
+                tries++;
+                if (tries >= 3)
+                    throw new Exception("Exceeded max retry limit on creating channel");
 
                 var req = WebRequest.Create($"https://discord.com/api/v9/channels/{Id}");
                 req.Method = "DELETE";
                 req.Headers.Add("Authorization", $"Bot {token}");
                 req.Headers.Add("X-Audit-Log-Reason", "lithium runs you");
+                req.Timeout = timeout;
                 WebResponse res = null;
                 try
                 {
@@ -130,7 +137,7 @@ namespace LithiumCore
                 }
                 catch (WebException ex) {
                     if (ex.Status == WebExceptionStatus.Timeout)
-                        throw ex;
+                        goto Retry;
 
                     dynamic json = JsonConvert.DeserializeObject(new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
 
@@ -193,13 +200,18 @@ namespace LithiumCore
 
         public Channel Create(string name, Type type)
         {
-            Retry:
+            int tries = 0;
+        Retry:
+            tries++;
+            if (tries >= 3)
+                throw new Exception("Exceeded max retry limit on creating channel");
 
             var req = WebRequest.Create($"https://discord.com/api/v9/guilds/{guildId}/channels");
             req.Method = "POST";
             req.ContentType = "application/json";
             req.Headers.Add("Authorization", $"Bot {token}");
             req.Proxy = null;
+            req.Timeout = timeout;
 
             // default to text
             int chantype = 0;
@@ -229,6 +241,9 @@ namespace LithiumCore
                 raw = new StreamReader(res.GetResponseStream()).ReadToEnd();
             } catch (WebException ex)
             {
+                if (ex.Status == WebExceptionStatus.Timeout)
+                    goto Retry;
+
                 raw = new StreamReader(ex.Response.GetResponseStream()).ReadToEnd();
                 error = ex;
             }
@@ -273,33 +288,41 @@ namespace LithiumCore
             int finished = 0;
 
             channels.Clear();
+            int created = 0;
 
             foreach (var load in loads)
             {
-                new Thread(() =>
+                var t = new Thread(() =>
                 {
-                    for (var x = 0;x < load.Count;x++)
+                    for (var x = 0; x < load.Count; x++)
                     {
                         try
                         {
                             var chan = Create(name, type);
-                            channels.Add(chan);
+                            created++;
 
+                            Debug.WriteLine(JsonConvert.SerializeObject(chan));
                             core.WriteLine("Created ", Color.White, $"#{name}", null, " [", Color.White, chan.Id.ToString(), null, "]");
                         }
-                        catch (Exception ex) {
+                        catch (Exception ex)
+                        {
                             Debug.WriteLine(ex);
-                            core.WriteLine(Color.Red, $"Failed to create channel ", Color.White, $"#{name}", null, ": ",  Color.White, ex.Message);
+                            core.WriteLine(Color.Red, $"Failed to create channel ", Color.White, $"#{name}", null, ": ", Color.White, ex.Message);
                         }
                     }
-                    finished++;
-                }).Start();
+                    lock (finished.GetType())
+                        finished++;
+                });
+                t.Start();
+                //t.Join();
             }
 
-            while (finished < count)
+            while (finished < loads.Count)
                 Thread.Sleep(50);
 
-            core.WriteLine(Color.Lime, $"Created {channels.Count} channels");
+            Debug.WriteLine("Finished creating channels");
+
+            core.WriteLine(Color.Lime, $"Created {created} channels");
             Finished?.Invoke();
             return channels;
         }
@@ -315,7 +338,7 @@ namespace LithiumCore
             foreach (var load in loads)
             {
                 // Create new thread
-                new Thread(() =>
+                var t = new Thread(() =>
                 {
                     // Iterate thru sublist and delete each channel within
                     foreach (var chan in load)
@@ -324,23 +347,24 @@ namespace LithiumCore
                         {
                             chan.Delete(token);
                             core.WriteLine($"Deleted ", Color.White, $"#{chan.Name}", null, " [", Color.White, chan.Id.ToString(), null, "]");
-                        } catch (Exception ex)
+                        }
+                        catch (Exception ex)
                         {
-                            errors.Add(ex);
-                            core.WriteLine(Color.Red, $"Failed to delete channel {chan.Name} ({chan.Id}): {ex.Message}");
+                            Debug.WriteLine(ex);
+                            core.WriteLine(Color.Red, $"Failed to delete channel {chan.Name} [{chan.Id}]: {ex.Message}");
                         }
                     }
-                    finished++;
-                }).Start();
+                    lock (finished.GetType())
+                        finished++;
+                });
+                t.Start();
+                // t.Join();
             }
 
             while (finished < loads.Count)
                 Thread.Sleep(50);
 
-            foreach (var ex in errors)
-            {
-                Debug.WriteLine(ex);
-            }
+            Debug.WriteLine("Finished deleting channels");
 
             core.WriteLine(Color.Lime, $"Finished nuking {channels.Count - errors.Count} channels");
             Finished?.Invoke();

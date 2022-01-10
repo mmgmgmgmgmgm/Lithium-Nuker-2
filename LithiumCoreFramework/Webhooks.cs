@@ -160,37 +160,63 @@ namespace LithiumCore
             System.Diagnostics.Debug.WriteLine(raw);
         }
 
-        public void Spam(string whName, string avUrl, string content, int amountEach)
+        public void Spam(string whName, string avUrl, string content, int amountEach, bool checkForExisting)
         {
             var channels = new Channels(token, guildId, threads).GetAll();
             var webhooks = new List<Webhook>();
 
             Content = content;
 
-            var preWhs = GetAll();
-
-            foreach (var prewh in preWhs)
-                if (prewh.Name == whName)
-                    webhooks.Add(prewh);
-
-            // Create a webhook for each channel
-            
-            foreach (Channels.Channel chan in channels)
+            if (checkForExisting)
             {
-                if (chan.Type == Channels.Type.Text && webhooks.FindAll(wh => wh.ChannelId == chan.Id).Count == 0)
+                var preWhs = GetAll();
+                foreach (var prewh in preWhs)
                 {
-                    var wh = Create(token, whName, chan.Id);
-                    if (wh != null)
-                        webhooks.Add(wh);
+                    if (prewh.Name == whName)
+                    {
+                        webhooks.Add(prewh);
+                        channels.RemoveAll(chan => chan.Id == prewh.ChannelId);
+                        core.WriteLine($"Found pre-existing webhook in ", Color.White, prewh.ChannelId.ToString(), null, ", reusing.");
+                    }
                 }
             }
 
+            // Create a webhook for each channel
+
+            var loads = WorkController.Seperate(channels, threads);
+
+            int loadsfin = 0;
+            foreach (var load in loads)
+            {
+                new Thread(() =>
+                {
+                    foreach (Channels.Channel chan in load)
+                    {
+                        try
+                        {
+                            if (chan.Type == Channels.Type.Text && webhooks.FindAll(wh => wh.ChannelId == chan.Id).Count == 0)
+                            {
+                                var wh = Create(token, whName, chan.Id);
+                                if (wh != null)
+                                    webhooks.Add(wh);
+                            }
+                        } catch { }
+                    }
+
+                    lock (loadsfin.GetType())
+                        loadsfin++;
+                }).Start();
+            }
+
+            while (loadsfin < loads.Count)
+                Thread.Sleep(50);
+
             // Create work loads
-            var loads = WorkController.Seperate(webhooks, threads);
+            var whloads = WorkController.Seperate(webhooks, threads);
             int finished = 0;
 
             // Create threads and run
-            foreach (var load in loads)
+            foreach (var load in whloads)
                 new Thread(() => { SendLoop(token, avUrl, load, amountEach); finished++; }).Start();
 
             // Wait until fully finished

@@ -81,20 +81,25 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\corrupted\\.nuget\\packages\\": {}
+    "C:\\Users\\Steve\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\corrupted\\Desktop\\Lithium\\LithiumCoreFramework\\LithiumCore.csproj",
+      "projectUniqueName": "D:\\[A] Code\\C#\\LithiumNukerV2\\LithiumCoreFramework\\LithiumCore.csproj",
       "projectName": "LithiumCore",
-      "projectPath": "C:\\Users\\corrupted\\Desktop\\Lithium\\LithiumCoreFramework\\LithiumCore.csproj",
-      "packagesPath": "C:\\Users\\corrupted\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\corrupted\\Desktop\\Lithium\\LithiumCoreFramework\\obj\\",
+      "projectPath": "D:\\[A] Code\\C#\\LithiumNukerV2\\LithiumCoreFramework\\LithiumCore.csproj",
+      "packagesPath": "C:\\Users\\Steve\\.nuget\\packages\\",
+      "outputPath": "D:\\[A] Code\\C#\\LithiumNukerV2\\LithiumCoreFramework\\obj\\",
       "projectStyle": "PackageReference",
       "skipContentFileWrite": true,
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\corrupted\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Steve\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

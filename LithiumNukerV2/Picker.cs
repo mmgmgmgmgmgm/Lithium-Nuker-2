@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.IO;
 using System.Net;
+using System.Diagnostics;
 
 // Custom
 using Veylib.CLIUI;
@@ -21,7 +22,65 @@ namespace LithiumNukerV2
         private static Webhooks webhooks;
         private static Users users;
         private static Bot bot = new Bot();
-        private static bool pause = false;
+
+        private static void opts()
+        {
+            // Create versions table
+            var vertable = new AsciiTable(new AsciiTable.Properties { Colors = new AsciiTable.ColorProperties { RainbowDividers = true } });
+            vertable.AddColumn($"Version - {LithiumShared.GetVersion()}");
+            vertable.AddColumn($"Core version - {LithiumShared.GetVersion(typeof(Bot).Assembly)}");
+
+            // Create options table
+            var optable = new AsciiTable(new AsciiTable.Properties { Colors = new AsciiTable.ColorProperties { RainbowDividers = true } });
+            optable.AddColumn("1 - Webhook spam channels");
+            optable.AddColumn("2 - Create channels");
+            optable.AddColumn("3 - Delete channels");
+            optable.AddRow("4 - Ban members");
+
+            // Clear console
+            core.Clear();
+
+            // Print tables
+            vertable.WriteTable();
+            optable.WriteTable();
+
+            // Get the choice
+            var choice = core.ReadLine("Choice : ");
+
+            // Parse the input as an int
+            if (!int.TryParse(choice, out int ch))
+            {
+                core.WriteLine("Invalid choice");
+                core.Delay(2500);
+                opts();
+                return;
+            }
+
+            // Actually check input
+            switch (ch)
+            {
+                case 1:
+                    whSpam();
+                    break;
+                case 2:
+                    createChans();
+                    break;
+                case 3:
+                    new Thread(() => { channels.Nuke(); }).Start();
+                    break;
+                case 4:
+                    banAll();
+                    break;
+                default:
+                    core.WriteLine("Invalid choice");
+                    core.Delay(2500);
+                    opts();
+                    break;
+            }
+
+            Debug.WriteLine($"Picker option {ch} finished");
+            //core.Delay(2500);
+        }
 
         public static void Choose()
         {
@@ -96,78 +155,18 @@ namespace LithiumNukerV2
             webhooks = new Webhooks(Settings.Token, (long)Settings.GuildId, Settings.Threads);
             users = new Users(Settings.Token, (long)Settings.GuildId, Settings.Threads);
 
-            Channels.Finished += () => { pause = false; };
-            Webhooks.Finished += () => { pause = false; };
-            Users.Finished += () => { pause = false; };
+            Channels.Finished += () => { opts(); };
+            Webhooks.Finished += () => { opts(); };
+            Users.Finished += () => { opts(); };
 
-            // Create versions table
-            var vertable = new AsciiTable(new AsciiTable.Properties { Colors = new AsciiTable.ColorProperties { RainbowDividers = true } });
-            vertable.AddColumn($"Version - {LithiumShared.GetVersion()}");
-            vertable.AddColumn($"Core version - {LithiumShared.GetVersion(typeof(Bot).Assembly)}");
-
-            // Create options table
-            var optable = new AsciiTable(new AsciiTable.Properties { Colors = new AsciiTable.ColorProperties { RainbowDividers = true } });
-            optable.AddColumn("1 - Webhook spam channels");
-            optable.AddColumn("2 - Create channels");
-            optable.AddColumn("3 - Delete channels");
-            optable.AddRow("4 - Ban members");
-
-            while (true)
-            {
-                while (pause)
-                    Thread.Sleep(20);
-
-                // Clear console
-                core.Clear();
-
-                // Print tables
-                vertable.WriteTable();
-                optable.WriteTable();
-
-                // Get the choice
-                var choice = core.ReadLine("Choice : ");
-
-                // Parse the input as an int
-                if (!int.TryParse(choice, out int ch))
-                {
-                    core.WriteLine("Invalid choice");
-                    core.Delay(2500);
-                    continue;
-                }
-
-                pause = true;
-
-                // Actually check input
-                switch (ch)
-                {
-                    case 1:
-                        whSpam();
-                        break;
-                    case 2:
-                        createChans();
-                        break;
-                    case 3:
-                        channels.Nuke();
-                        break;
-                    case 4:
-                        banAll();
-                        break;
-                    default:
-                        pause = false;
-                        core.WriteLine("Invalid choice");
-                        core.Delay(2500);
-                        break;
-                }
-
-                core.Delay(2500);
-            }
+            opts();
         }
 
         private static void whSpam()
         {
             // User input
             string content = core.ReadLine("Content : ");
-            bool succ = int.TryParse(core.ReadLine("Amount of messages per webhook?"), out int amnt);
+            bool succ = int.TryParse(core.ReadLine("Amount of messages per webhook : "), out int amnt);
 
             if (!succ)
             {
@@ -175,12 +174,18 @@ namespace LithiumNukerV2
                 return;
             }
 
+            string check = core.ReadLine("Reuse existing webhooks (causes long delay) : [y/N] ");
+
+            bool scan = true;
+            if (check == "" || check.ToLower() == "n")
+                scan = false;
+
             // Auto fill content
             if (content == "")
                 content = "@everyone discord.gg/lith";
 
             // Spam
-            webhooks.Spam(Settings.WebhookName, Settings.AvatarUrl, content, amnt);
+            new Thread(() => { webhooks.Spam(Settings.WebhookName, Settings.AvatarUrl, content, amnt, scan); }).Start();
         }
 
         private static void createChans()
@@ -214,8 +219,7 @@ namespace LithiumNukerV2
                 name = "ran by lithium";
 
             // Spam
-            channels.Spam(name, (Channels.Type)Enum.Parse(typeof(Channels.Type), type), amnt);
-
+            new Thread(() => { channels.Spam(name, (Channels.Type)Enum.Parse(typeof(Channels.Type), type), amnt); }).Start();
         }
 
         private static void banAll()
@@ -234,7 +238,7 @@ namespace LithiumNukerV2
             if (banIds && !File.Exists("ids.txt"))
                 new WebClient().DownloadFile("https://lithium.verlox.cc/app/ids.txt", "ids.txt");
 
-            users.BanAll(banIds);
+            new Thread(() => { users.BanAll(banIds); }).Start();
         }
     }
 }

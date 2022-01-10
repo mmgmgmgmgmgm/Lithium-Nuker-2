@@ -171,8 +171,22 @@ namespace LithiumNukerV2
             parseArgs(args);
 
             #region Setting up the UI
-            string motd = Settings.Debug ? "Debug build | auto error reporting disabled." : "suck a fat cock";
-            core.Start(new StartupProperties { MOTD = motd, ColorRotation = 260,  SilentStart = true, LogoString = Settings.Logo, DebugMode = Settings.Debug, Author = new StartupAuthorProperties { Url = "verlox.cc & russianheavy.xyz", Name = "verlox & russian heavy" }, Title = new StartupConsoleTitleProperties { Text = "Lithium Nuker V2", Status = "Authorization required" } });
+            var props = new StartupProperties { 
+                MOTD = Settings.Debug ? "Debug build | auto error reporting disabled." : "suck a fat cock", 
+                ColorRotation = 260, 
+                SilentStart = true, 
+                LogoString = Settings.Logo,
+                DebugMode = Settings.Debug, 
+                Author = new StartupAuthorProperties { 
+                    Url = "verlox.cc & russianheavy.xyz", 
+                    Name = "verlox & russian heavy"
+                }, 
+                Title = new StartupConsoleTitleProperties { 
+                    Text = "Lithium Nuker V2", 
+                    Status = "Authorization required"
+                } 
+            };
+            core.Start(props);
             #endregion
 
             // Check version
