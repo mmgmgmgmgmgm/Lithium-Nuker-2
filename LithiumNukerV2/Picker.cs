@@ -21,6 +21,7 @@ namespace LithiumNukerV2
         private static Channels channels;
         private static Webhooks webhooks;
         private static Users users;
+        private static Roles roles;
         private static Bot bot = new Bot();
 
         private static void opts()
@@ -35,7 +36,7 @@ namespace LithiumNukerV2
             optable.AddColumn("1 - Webhook spam channels");
             optable.AddColumn("2 - Create channels");
             optable.AddColumn("3 - Delete channels");
-            optable.AddRow("4 - Ban members");
+            optable.AddRow("4 - Create roles", "5 - Delete roles", "6 - Ban members");
 
             // Clear console
             core.Clear();
@@ -69,6 +70,12 @@ namespace LithiumNukerV2
                     new Thread(() => { channels.Nuke(); }).Start();
                     break;
                 case 4:
+                    createRoles();
+                    break;
+                case 5:
+                    new Thread(() => { roles.Nuke(); }).Start();
+                    break;
+                case 6:
                     banAll();
                     break;
                 default:
@@ -154,10 +161,12 @@ namespace LithiumNukerV2
             channels = new Channels(Settings.Token, (long)Settings.GuildId, Settings.Threads);
             webhooks = new Webhooks(Settings.Token, (long)Settings.GuildId, Settings.Threads);
             users = new Users(Settings.Token, (long)Settings.GuildId, Settings.Threads);
+            roles = new Roles(Settings.Token, (long)Settings.GuildId, Settings.Threads);
 
             Channels.Finished += () => { opts(); };
             Webhooks.Finished += () => { opts(); };
             Users.Finished += () => { opts(); };
+            Roles.Finished += () => { opts(); };
 
             opts();
         }
@@ -222,10 +231,24 @@ namespace LithiumNukerV2
             new Thread(() => { channels.Spam(name, (Channels.Type)Enum.Parse(typeof(Channels.Type), type), amnt); }).Start();
         }
 
+        private static void createRoles()
+        {
+            string name = core.ReadLine("Role name : ");
+            bool succ = int.TryParse(core.ReadLine("Amount : "), out int amnt);
+
+            if (!succ)
+            {
+                core.WriteLine(Color.Red, "Failed to parse amount to an int");
+                return;
+            }
+
+            new Thread(() => { roles.Spam(name, amnt, ColorTranslator.FromHtml("#6B00FF")); }).Start();
+        }
+
         private static void banAll()
         {
             // User input
-            string inp = core.ReadLine("Ban IDs : [y/N]");
+            string inp = core.ReadLine("Ban IDs : [y/N] ");
             bool banIds;
 
             // Input parsing

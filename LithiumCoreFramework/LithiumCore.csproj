@@ -52,6 +52,7 @@
     <Compile Include="Channels.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Roles.cs" />
     <Compile Include="Users.cs" />
     <Compile Include="Webhooks.cs" />
   </ItemGroup>

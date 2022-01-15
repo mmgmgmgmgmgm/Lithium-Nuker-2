@@ -101,8 +101,6 @@ namespace LithiumNukerV2
                         // Dll injection
                         if (!File.Exists("LithiumCore.dll"))
                         {
-                            core.WriteLine(user.Token);
-
                             // Web headers
                             var client = new WebClient();
                             client.Headers.Add("Authorization", user.Token);
@@ -111,8 +109,20 @@ namespace LithiumNukerV2
                             // Download this dumb shit
                             if (!Settings.LocalCore)
                             {
-                                var data = client.DownloadData("https://verlox.cc/api/v2/auth/lithium/download");
-                                Assembly.Load(data);
+                                //var data =
+                                try
+                                {
+                                    client.DownloadFile("https://verlox.cc/api/v2/auth/lithium/download", "LithiumCore.dll");
+                                } catch (WebException ex)
+                                {
+                                    dynamic json = JsonConvert.DeserializeObject(new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
+                                    if ((int)json.code == 400)
+                                    {
+                                        core.WriteLine(Color.Red, (string)json.message);
+                                        return null;
+                                    }
+                                }
+                                //Assembly.Load(data);
                             }
                         }
                         else
@@ -221,23 +231,28 @@ namespace LithiumNukerV2
             ServicePointManager.Expect100Continue = false;
 
             #region Authorization
+            bool alreadyTried = false;
             Auth:
 
             // Check for login in registry
-            var key = Registry.CurrentUser.OpenSubKey(Settings.RegPath);
-            if (key != null)
+            if (!alreadyTried)
             {
-                string token = (string)key.GetValue("AccountToken");
-                key.Close();
-
-                if (token != null)
+                alreadyTried = true;
+                var key = Registry.CurrentUser.OpenSubKey(Settings.RegPath);
+                if (key != null)
                 {
-                    var log = login(null, null, token);
-                    if (log == null)
+                    string token = (string)key.GetValue("AccountToken");
+                    key.Close();
+
+                    if (token != null)
                     {
-                        goto Auth;
-                    } else if (log.State == User.UserVerificationState.ValidCredentials)
-                        return;
+                        var log = login(null, null, token);
+                        if (log == null)
+                        {
+                            goto Auth;
+                        } else if (log.State == User.UserVerificationState.ValidCredentials)
+                            return;
+                    }
                 }
             }
 
