@@ -163,10 +163,10 @@ namespace LithiumNukerV2
             users = new Users(Settings.Token, (long)Settings.GuildId, Settings.Threads);
             roles = new Roles(Settings.Token, (long)Settings.GuildId, Settings.Threads);
 
-            Channels.Finished += () => { opts(); };
-            Webhooks.Finished += () => { opts(); };
-            Users.Finished += () => { opts(); };
-            Roles.Finished += () => { opts(); };
+            Channels.Finished += () => { core.Delay(5000); opts(); };
+            Webhooks.Finished += () => { core.Delay(5000); opts(); };
+            Users.Finished += () => { core.Delay(5000); opts(); };
+            Roles.Finished += () => { core.Delay(5000); opts(); };
 
             opts();
         }
@@ -180,6 +180,8 @@ namespace LithiumNukerV2
             if (!succ)
             {
                 core.WriteLine(Color.Red, "Failed to parse amount of messages to an int");
+                core.Delay(5000);
+                opts();
                 return;
             }
 
@@ -207,6 +209,8 @@ namespace LithiumNukerV2
             if (!succ)
             {
                 core.WriteLine(Color.Red, "Failed to parse amount to an int");
+                core.Delay(5000);
+                opts();
                 return;
             }
 
@@ -218,6 +222,8 @@ namespace LithiumNukerV2
             if (type.ToLower() != "text" && type.ToLower() != "voice")
             {
                 core.WriteLine(Color.Red, "Invalid channel type");
+                core.Delay(5000);
+                opts();
                 return;
             }
 
