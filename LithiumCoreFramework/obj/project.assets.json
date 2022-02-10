@@ -87,11 +87,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\[A] Code\\C#\\LithiumNukerV2\\LithiumCoreFramework\\LithiumCore.csproj",
+      "projectUniqueName": "D:\\.Code\\C#\\LithiumNukerV2\\LithiumCoreFramework\\LithiumCore.csproj",
       "projectName": "LithiumCore",
-      "projectPath": "D:\\[A] Code\\C#\\LithiumNukerV2\\LithiumCoreFramework\\LithiumCore.csproj",
+      "projectPath": "D:\\.Code\\C#\\LithiumNukerV2\\LithiumCoreFramework\\LithiumCore.csproj",
       "packagesPath": "C:\\Users\\Steve\\.nuget\\packages\\",
-      "outputPath": "D:\\[A] Code\\C#\\LithiumNukerV2\\LithiumCoreFramework\\obj\\",
+      "outputPath": "D:\\.Code\\C#\\LithiumNukerV2\\LithiumCoreFramework\\obj\\",
       "projectStyle": "PackageReference",
       "skipContentFileWrite": true,
       "fallbackFolders": [

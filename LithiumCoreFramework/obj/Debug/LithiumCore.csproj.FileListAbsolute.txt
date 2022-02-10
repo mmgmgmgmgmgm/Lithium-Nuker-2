@@ -12,3 +12,10 @@ C:\Users\corrupted\Desktop\Lithium\LithiumCoreFramework\obj\Debug\LithiumCore.pd
 C:\Users\corrupted\Desktop\Lithium\Compiled\Debug\LithiumCore.dll
 C:\Users\corrupted\Desktop\Lithium\Compiled\Debug\LithiumCore.pdb
 C:\Users\corrupted\Desktop\Lithium\LithiumCoreFramework\obj\Debug\LithiumCore.csproj.CopyComplete
+D:\.Code\C#\LithiumNukerV2\Compiled\Debug\LithiumCore.dll
+D:\.Code\C#\LithiumNukerV2\Compiled\Debug\LithiumCore.pdb
+D:\.Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Debug\LithiumCore.csproj.AssemblyReference.cache
+D:\.Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Debug\LithiumCore.csproj.CoreCompileInputs.cache
+D:\.Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Debug\LithiumCore.csproj.CopyComplete
+D:\.Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Debug\LithiumCore.dll
+D:\.Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Debug\LithiumCore.pdb

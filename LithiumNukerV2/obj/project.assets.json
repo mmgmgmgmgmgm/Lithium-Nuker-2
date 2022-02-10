@@ -87,11 +87,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\[A] Code\\C#\\LithiumNukerV2\\LithiumNukerV2\\LithiumNukerV2.csproj",
+      "projectUniqueName": "D:\\.Code\\C#\\LithiumNukerV2\\LithiumNukerV2\\LithiumNukerV2.csproj",
       "projectName": "LithiumNukerV2",
-      "projectPath": "D:\\[A] Code\\C#\\LithiumNukerV2\\LithiumNukerV2\\LithiumNukerV2.csproj",
+      "projectPath": "D:\\.Code\\C#\\LithiumNukerV2\\LithiumNukerV2\\LithiumNukerV2.csproj",
       "packagesPath": "C:\\Users\\Steve\\.nuget\\packages\\",
-      "outputPath": "D:\\[A] Code\\C#\\LithiumNukerV2\\LithiumNukerV2\\obj\\",
+      "outputPath": "D:\\.Code\\C#\\LithiumNukerV2\\LithiumNukerV2\\obj\\",
       "projectStyle": "PackageReference",
       "skipContentFileWrite": true,
       "fallbackFolders": [

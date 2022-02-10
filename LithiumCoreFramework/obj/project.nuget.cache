@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "exlb8okXmyxcXSOlqUAIe5GXT7Wkb6fPiEdPeq44Hsv4aZXRTakjSGWl6vJxQka72Fnks2POk0Hm0KkKdrim+A==",
+  "dgSpecHash": "5MpzdtOpl9nlMJrWUQGdFxS4AdlDYQH6T9gGHXt4CYER+zr8NNklDJtGp0kbejv380EvUUKhjCE7fvPi9A/kEw==",
   "success": true,
-  "projectFilePath": "D:\\[A] Code\\C#\\LithiumNukerV2\\LithiumCoreFramework\\LithiumCore.csproj",
+  "projectFilePath": "D:\\.Code\\C#\\LithiumNukerV2\\LithiumCoreFramework\\LithiumCore.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Steve\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
   ],

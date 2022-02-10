@@ -274,7 +274,7 @@ namespace LithiumCore
                         catch (Exception ex)
                         {
                             Debug.WriteLine(ex);
-                            core.WriteLine(Color.Red, $"Failed to delete channel {role.Name} [{role.Id}]: {ex.Message}");
+                            core.WriteLine(Color.Red, $"Failed to delete roles {role.Name} [{role.Id}]: {ex.Message}");
                         }
                     }
                     lock (finished.GetType())

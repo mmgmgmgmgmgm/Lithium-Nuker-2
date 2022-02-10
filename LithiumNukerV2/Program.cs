@@ -181,17 +181,17 @@ namespace LithiumNukerV2
             parseArgs(args);
 
             #region Setting up the UI
-            var props = new StartupProperties { 
+            var props = new Core.StartupProperties { 
                 MOTD = Settings.Debug ? "Debug build | auto error reporting disabled." : "suck a fat cock", 
                 ColorRotation = 260, 
                 SilentStart = true, 
                 LogoString = Settings.Logo,
                 DebugMode = Settings.Debug, 
-                Author = new StartupAuthorProperties { 
+                Author = new Core.StartupAuthorProperties { 
                     Url = "verlox.cc & russianheavy.xyz", 
                     Name = "verlox & russian heavy"
                 }, 
-                Title = new StartupConsoleTitleProperties { 
+                Title = new Core.StartupConsoleTitleProperties { 
                     Text = "Lithium Nuker V2", 
                     Status = "Authorization required"
                 } 
@@ -207,14 +207,14 @@ namespace LithiumNukerV2
                 var version = Version.Parse(v.Value);
                 if (version > LithiumShared.GetVersion())
                 {
-                    core.WriteLine(new MessageProperties { Label = new MessagePropertyLabel { Text = "fail" } }, "This client is outdated, download a new client from the Discord, press any key to close");
+                    core.WriteLine(new Core.MessageProperties { Label = new Core.MessagePropertyLabel { Text = "fail" } }, "This client is outdated, download a new client from the Discord, press any key to close");
                     Console.ReadKey();
                     return;
                 }
             }
             else
             {
-                core.WriteLine(new MessageProperties { Label = new MessagePropertyLabel { Text = "fail" } }, "Failed to check version, press any key to close");
+                core.WriteLine(new Core.MessageProperties { Label = new Core.MessagePropertyLabel { Text = "fail" } }, "Failed to check version, press any key to close");
                 Console.ReadKey();
                 return;
             }
