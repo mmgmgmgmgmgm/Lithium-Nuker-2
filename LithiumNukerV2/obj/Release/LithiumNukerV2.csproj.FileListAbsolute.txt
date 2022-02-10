@@ -13,3 +13,12 @@ D:\[A] Code\C#\LithiumNukerV2\LithiumNukerV2\obj\Release\LithiumNukerV2.pdb
 D:\[A] Code\C#\LithiumNukerV2\Compiled\Release\LithiumNukerV2.exe.config
 D:\[A] Code\C#\LithiumNukerV2\Compiled\Release\LithiumNukerV2.exe
 D:\[A] Code\C#\LithiumNukerV2\Compiled\Release\LithiumNukerV2.pdb
+D:\.Code\C#\LithiumNukerV2\Compiled\Release\LithiumNukerV2.exe.config
+D:\.Code\C#\LithiumNukerV2\Compiled\Release\LithiumNukerV2.exe
+D:\.Code\C#\LithiumNukerV2\Compiled\Release\LithiumNukerV2.pdb
+D:\.Code\C#\LithiumNukerV2\LithiumNukerV2\obj\Release\LithiumNukerV2.csproj.AssemblyReference.cache
+D:\.Code\C#\LithiumNukerV2\LithiumNukerV2\obj\Release\LithiumNukerV2.csproj.SuggestedBindingRedirects.cache
+D:\.Code\C#\LithiumNukerV2\LithiumNukerV2\obj\Release\LithiumNukerV2.csproj.CoreCompileInputs.cache
+D:\.Code\C#\LithiumNukerV2\LithiumNukerV2\obj\Release\LithiumNukerV2.csproj.CopyComplete
+D:\.Code\C#\LithiumNukerV2\LithiumNukerV2\obj\Release\LithiumNukerV2.exe
+D:\.Code\C#\LithiumNukerV2\LithiumNukerV2\obj\Release\LithiumNukerV2.pdb

@@ -45,12 +45,6 @@ namespace LithiumCore
 
         public class Channel
         {
-            // Placeholder only
-            public Channel()
-            {
-
-            }
-
             public Channel(dynamic raw)
             {
                 if (raw.message != null && raw.message == "You are being rate limited")
@@ -96,7 +90,9 @@ namespace LithiumCore
 
                 try
                 {
-                    raw = new StreamReader(req.GetResponse().GetResponseStream()).ReadToEnd();
+                    var res = req.GetResponse();
+                    raw = new StreamReader(res.GetResponseStream()).ReadToEnd();
+                    res.Close();
                 }
                 catch (WebException ex)
                 {
@@ -149,7 +145,7 @@ namespace LithiumCore
                 }
 
                 if (res != null)
-                    res.Dispose();
+                    res.Close();
                 return;
             }
         }
@@ -176,7 +172,9 @@ namespace LithiumCore
             // Get the raw response
             try
             {
-                raw = new StreamReader(req.GetResponse().GetResponseStream()).ReadToEnd();
+                var res = req.GetResponse();
+                raw = new StreamReader(res.GetResponseStream()).ReadToEnd();
+                res.Close();
             }
             catch (WebException ex)
             {

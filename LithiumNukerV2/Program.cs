@@ -72,9 +72,6 @@ namespace LithiumNukerV2
                             core.WriteLine(Color.Red, "--connection-limit argument value invalid");
                         Settings.ConnectionLimit = connlimit;
                         break;
-                    case "--local-core":
-                        Settings.LocalCore = true;
-                        break;
                     // Means that there was an unparsed arg that is unknown
                     default:
                         core.WriteLine(Color.Red, $"Invalid argument: {args[x].ToLower()}");
@@ -83,95 +80,9 @@ namespace LithiumNukerV2
             }
         }
 
-        private static User.UserData login(string username, string password, string token = null)
-        {
-            try
-            {
-                // Login
-                User.UserData user;
-                if (token != null)
-                    user = User.Verify(token);
-                else
-                    user = User.Verify(username, password);
-
-                // Check user state
-                switch (user.State)
-                {
-                    case User.UserVerificationState.ValidCredentials:
-                        // Dll injection
-                        if (!File.Exists("LithiumCore.dll"))
-                        {
-                            // Web headers
-                            var client = new WebClient();
-                            client.Headers.Add("Authorization", user.Token);
-                            client.Headers.Add("HWID", Shared.HWID);
-
-                            // Download this dumb shit
-                            if (!Settings.LocalCore)
-                            {
-                                //var data =
-                                try
-                                {
-                                    client.DownloadFile("https://verlox.cc/api/v2/auth/lithium/download", "LithiumCore.dll");
-                                } catch (WebException ex)
-                                {
-                                    dynamic json = JsonConvert.DeserializeObject(new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
-                                    if ((int)json.code == 400)
-                                    {
-                                        core.WriteLine(Color.Red, (string)json.message);
-                                        return null;
-                                    }
-                                }
-                                //Assembly.Load(data);
-                            }
-                        }
-                        else
-                            Debug.WriteLine("LithiumCore.dll already downloaded, skipping.");
-
-                        // Save the token to the registry
-                        var key = Registry.CurrentUser.CreateSubKey(Settings.RegPath);
-                        key.SetValue("AccountToken", user.Token);
-                        key.Close();
-                        
-                        Picker.Choose(); // Open options
-                        break;
-                    case User.UserVerificationState.AccountDisabled:
-                        core.WriteLine(Color.Red, "Account is disabled.");
-                        break;
-                    case User.UserVerificationState.ApplicationDisabled:
-                        core.WriteLine(Color.Red, "Application is disabled.");
-                        break;
-                    case User.UserVerificationState.InvalidHWID:
-                        core.WriteLine(Color.Red, "HWID invalid.");
-                        break;
-                    case User.UserVerificationState.InvalidCredentials:
-                        core.WriteLine(Color.Red, "Invalid credentials");
-                        break;
-                }
-
-                return user;
-            }
-            catch (WebException ex)
-            {
-                LithiumShared.ExceptionReport(ex);
-                core.WriteLine("WebException! ", Color.Red, new StreamReader(ex.Response.GetResponseStream()).ReadToEnd().Replace("\n", " "));
-            }
-            catch (Exception ex) // Whoop de doo, another shitty error to deal with at some point
-            {
-                LithiumShared.ExceptionReport(ex);
-                core.WriteLine(Color.Red, $"Error logging in: {ex.Message}");
-            }
-
-            return null;
-        }
-
         // Entry point
         static void Main(string[] args)
         {
-            // Setting up auth
-            Shared.AppID = 2;
-            Shared.APIUrl = "https://verlox.cc/api/v2";
-
             // No.
             #if DEBUG
             Settings.Debug = true;
@@ -219,54 +130,12 @@ namespace LithiumNukerV2
                 return;
             }
 
-            // Stupid fucking shit doesnt work anyways
-            // On exit, delete the LithiumCore.dll if you can
-            //AppDomain.CurrentDomain.ProcessExit += (eat, shit) =>
-            //{
-            //    File.Delete("LithiumCore.dll");
-            //};
-
             // Setup the stupid ass connection limits
             ServicePointManager.DefaultConnectionLimit = Settings.ConnectionLimit;
             ServicePointManager.Expect100Continue = false;
 
-            #region Authorization
-            bool alreadyTried = false;
-            Auth:
-
-            // Check for login in registry
-            if (!alreadyTried)
-            {
-                alreadyTried = true;
-                var key = Registry.CurrentUser.OpenSubKey(Settings.RegPath);
-                if (key != null)
-                {
-                    string token = (string)key.GetValue("AccountToken");
-                    key.Close();
-
-                    if (token != null)
-                    {
-                        var log = login(null, null, token);
-                        if (log == null)
-                        {
-                            goto Auth;
-                        } else if (log.State == User.UserVerificationState.ValidCredentials)
-                            return;
-                    }
-                }
-            }
-
-            // Do a while loop so that they have to login
-            while (true)
-            {
-                // Get creds
-                string username = core.ReadLine("Username : ");
-                string password = core.ReadLineProtected("Password : ");
-
-                login(username, password);
-            }
-
-            #endregion
+            // Open options
+            Picker.Choose(); 
         }
     }
 }

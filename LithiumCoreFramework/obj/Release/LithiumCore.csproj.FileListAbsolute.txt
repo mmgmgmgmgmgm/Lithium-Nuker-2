@@ -8,3 +8,13 @@ D:\[A] Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Release\LithiumCore.cspro
 D:\[A] Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Release\LithiumCore.csproj.CopyComplete
 D:\[A] Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Release\LithiumCore.dll
 D:\[A] Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Release\LithiumCore.pdb
+D:\.Code\C#\LithiumNukerV2\LithiumCoreFramework\bin\Release\LithiumCore.dll
+D:\.Code\C#\LithiumNukerV2\LithiumCoreFramework\bin\Release\LithiumCore.pdb
+D:\.Code\C#\LithiumNukerV2\LithiumCoreFramework\bin\Release\Newtonsoft.Json.dll
+D:\.Code\C#\LithiumNukerV2\LithiumCoreFramework\bin\Release\Veylib.dll
+D:\.Code\C#\LithiumNukerV2\LithiumCoreFramework\bin\Release\Veylib.pdb
+D:\.Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Release\LithiumCore.csproj.AssemblyReference.cache
+D:\.Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Release\LithiumCore.csproj.CoreCompileInputs.cache
+D:\.Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Release\LithiumCore.csproj.CopyComplete
+D:\.Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Release\LithiumCore.dll
+D:\.Code\C#\LithiumNukerV2\LithiumCoreFramework\obj\Release\LithiumCore.pdb

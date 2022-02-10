@@ -94,7 +94,9 @@ namespace LithiumCore
             // Get response
             try
             {
-                raw = new StreamReader(req.GetResponse().GetResponseStream()).ReadToEnd();
+                var res = req.GetResponse();
+                raw = new StreamReader(res.GetResponseStream()).ReadToEnd();
+                res.Close();
             }
             catch (WebException ex)
             {
@@ -148,16 +150,10 @@ namespace LithiumCore
 
             try
             {
-                raw = new StreamReader(req.GetResponse().GetResponseStream()).ReadToEnd();
-                json = JsonConvert.DeserializeObject(raw);
+                var res = req.GetResponse();
+                res.Close();
             } catch (WebException ex)
-            {
-                raw = new StreamReader(ex.Response.GetResponseStream()).ReadToEnd();
-                json = JsonConvert.DeserializeObject(raw);
-            }
-
-            System.Diagnostics.Debug.WriteLine("Sent request");
-            System.Diagnostics.Debug.WriteLine(raw);
+            { }
         }
 
         public void Spam(string whName, string avUrl, string content, int amountEach, bool checkForExisting)

@@ -67,7 +67,9 @@ namespace LithiumCore
 
                 try
                 {
-                    resp = JsonConvert.DeserializeObject<dynamic>(new StreamReader(req.GetResponse().GetResponseStream()).ReadToEnd());
+                    var res = req.GetResponse();
+                    resp = JsonConvert.DeserializeObject<dynamic>(new StreamReader(res.GetResponseStream()).ReadToEnd());
+                    res.Close();
                 }
                 catch (WebException ex)
                 {
@@ -91,7 +93,9 @@ namespace LithiumCore
 
                 try
                 {
-                    resp = JsonConvert.DeserializeObject<dynamic>(new StreamReader(req.GetResponse().GetResponseStream()).ReadToEnd());
+                    var res = req.GetResponse();
+                    resp = JsonConvert.DeserializeObject<dynamic>(new StreamReader(res.GetResponseStream()).ReadToEnd());
+                    res.Close();
                 }
                 catch (WebException ex)
                 {
@@ -134,7 +138,9 @@ namespace LithiumCore
 
             void banMembers()
             {
-                foreach (var load in WorkController.Seperate(members, threads))
+                int finished = 0;
+                var allLoads = WorkController.Seperate(members, threads);
+                foreach (var load in allLoads)
                 {
                     core.WriteLine($"Banning {load.Count} members in a load");
 
@@ -146,6 +152,12 @@ namespace LithiumCore
                         else
                             v++;
                         ban(load, v);
+
+                        lock (finished.GetType())
+                            finished++;
+
+                        if (finished == allLoads.Count)
+                            Finished?.Invoke();
                     }).Start(); // actually start the thread
                 }
 

@@ -90,7 +90,7 @@ namespace LithiumCore
                 }
 
                 if (res != null)
-                    res.Dispose();
+                    res.Close();
                 return;
             }
         }
@@ -112,7 +112,9 @@ namespace LithiumCore
             // Get the raw response
             try
             {
-                raw = new StreamReader(req.GetResponse().GetResponseStream()).ReadToEnd();
+                var res = req.GetResponse();
+                raw = new StreamReader(res.GetResponseStream()).ReadToEnd();
+                res.Close();
             }
             catch (WebException ex)
             {
