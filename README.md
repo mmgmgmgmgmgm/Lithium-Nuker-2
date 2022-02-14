@@ -4,8 +4,8 @@
 There is no more support for this. This is going open-sourced, so you can do it yourself to how you want.
 
 ## Previews
-![Fullscreen](https://cdn.discordapp.com/attachments/884905709806944266/942878458227331132/LithiumNukerV2_6b69DdjPjS.png)
-![Banning](https://cdn.discordapp.com/attachments/872502918446714900/942911787962089492/Discord_x4sMuceoem.gif)
+![Fullscreen](https://github.com/verlox/Lithium-Nuker-2/blob/master/Previews/preview.png)
+![Banning](https://github.com/verlox/Lithium-Nuker-2/blob/master/Previews/banning.gif)
 
 ## About
 This nuker is the fastest discord server nuker made in C#
