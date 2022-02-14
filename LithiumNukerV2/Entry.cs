@@ -17,15 +17,14 @@ using Veylib.Authentication;
 using Newtonsoft.Json;
 using System.Reflection;
 
-// If you somehow cracked this code, good job, there is minimal effort.
-// Only reason there is any obf, is to prevent annoying ass skids.
-// Anyways, carry on.
-// - verlox
-// ps. eat shit
+/*
+ * Nuking com is shit
+ *  - verlox 2.14.2022
+ * */
 
 namespace LithiumNukerV2
 {
-    internal class Program
+    internal class Entry
     {
         // Setup CLIUI
         public static Core core = Core.GetInstance();
@@ -88,12 +87,9 @@ namespace LithiumNukerV2
             Settings.Debug = true;
             #endif
 
-            // Parse the args
-            parseArgs(args);
-
             #region Setting up the UI
             var props = new Core.StartupProperties { 
-                MOTD = Settings.Debug ? "Debug build | auto error reporting disabled." : "suck a fat cock", 
+                MOTD = "fuck skids | verlox & russian heavy on top", 
                 ColorRotation = 260, 
                 SilentStart = true, 
                 LogoString = Settings.Logo,
@@ -103,13 +99,18 @@ namespace LithiumNukerV2
                     Name = "verlox & russian heavy"
                 }, 
                 Title = new Core.StartupConsoleTitleProperties { 
-                    Text = "Lithium Nuker V2", 
-                    Status = "Authorization required"
+                    Text = "Lithium Nuker V2"
                 } 
             };
             core.Start(props);
             #endregion
 
+            // Parse the args
+            parseArgs(args);
+
+            /*
+             * Fuck version shit
+             * 
             // Check version
             var v = Vars.Get("loader_version", -1);
 
@@ -129,13 +130,14 @@ namespace LithiumNukerV2
                 Console.ReadKey();
                 return;
             }
+            */
 
             // Setup the stupid ass connection limits
             ServicePointManager.DefaultConnectionLimit = Settings.ConnectionLimit;
             ServicePointManager.Expect100Continue = false;
 
             // Open options
-            Picker.Choose(); 
+            Picker.Choose();
         }
     }
 }

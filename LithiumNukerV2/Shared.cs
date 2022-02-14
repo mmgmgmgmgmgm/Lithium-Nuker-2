@@ -20,8 +20,11 @@ namespace LithiumNukerV2
 {
     public class LithiumShared
     {
-        private static Core core = Core.GetInstance();
+        // This endpoint does not exist since I will not be providing support anymore.
+        // No point in even attempting to make a request at this point.
+        /*
 
+        //private static Core core = Core.GetInstance();
         public static void ExceptionReport(Exception ex, bool auto = true)
         {
             Debug.WriteLine(ex);
@@ -58,6 +61,7 @@ namespace LithiumNukerV2
                 core.WriteLine(Color.Red, $"Failed to send exception report: {ex2.Message}");
             }
         }
+        */
 
         public static Version GetVersion(Assembly sender = null)
         {

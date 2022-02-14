@@ -261,7 +261,6 @@ namespace LithiumCore
                             else
                             {
                                 core.WriteLine(Color.Red, $"Failed to ban {member}");
-                                Debug.WriteLine(code);
                                 Debug.WriteLine($"resp : {resp}");
                                 Load.Remove(member); // remove the member
                             }
