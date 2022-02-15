@@ -3,6 +3,9 @@
 ## Support
 There is no more support for this. This is going open-sourced, so you can do it yourself to how you want.
 
+## Pull requests
+Feel free to submit pull requests
+
 ## Previews
 ![Fullscreen](https://github.com/verlox/Lithium-Nuker-2/blob/master/Previews/preview.png)
 ![Banning](https://github.com/verlox/Lithium-Nuker-2/blob/master/Previews/banning.gif)
