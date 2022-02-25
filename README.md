@@ -1,5 +1,11 @@
 # Lithium Nuker V2
 
+## Installation
+1. Go to [releases](https://github.com/verlox/Lithium-Nuker-2/releases)
+2. Download **LithiumNukerV2.zip**
+3. Extract contents
+4. Run **LithiumNukerV2.exe**
+
 ## Support
 There is no more support for this. This is going open-sourced, so you can do it yourself to how you want.
 
