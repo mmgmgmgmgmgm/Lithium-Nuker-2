@@ -153,6 +153,13 @@ namespace LithiumCore
                             v++;
                         ban(load, v);
 
+                        getMembers();
+                        if (members.Count > 0)
+                        {
+                            banMembers();
+                            return;
+                        }
+
                         lock (finished.GetType())
                             finished++;
 
@@ -251,12 +258,9 @@ namespace LithiumCore
 
                             if (!err)
                             {
-                                //if (code >= 200 && code < 300) // 2xx is success.
-                                //{
-                                    core.WriteLine(Color.Lime, $"Banned {member}"); // very cool!
+                                core.WriteLine(Color.Lime, $"Banned {member}"); // very cool!
 
-                                    Load.Remove(member); // remove the member
-                                //,}
+                                Load.Remove(member); // remove the member
                             }
                             else
                             {

@@ -89,9 +89,11 @@ namespace LithiumNukerV2
 
             #region Setting up the UI
             var props = new Core.StartupProperties { 
-                MOTD = "fuck skids | verlox & russian heavy on top", 
+                MOTD = new Core.StartupMOTDProperties
+                {
+                    Text = "fuck skids | verlox & russian heavy on top"
+                }, 
                 ColorRotation = 260, 
-                SilentStart = true, 
                 LogoString = Settings.Logo,
                 DebugMode = Settings.Debug, 
                 Author = new Core.StartupAuthorProperties { 
