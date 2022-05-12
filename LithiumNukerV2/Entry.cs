@@ -91,14 +91,14 @@ namespace LithiumNukerV2
             var props = new Core.StartupProperties { 
                 MOTD = new Core.StartupMOTDProperties
                 {
-                    Text = "fuck skids | verlox & russian heavy on top"
+                    Text = "Orbit On TOP"
                 }, 
                 ColorRotation = 260, 
                 LogoString = Settings.Logo,
                 DebugMode = Settings.Debug, 
                 Author = new Core.StartupAuthorProperties { 
-                    Url = "verlox.cc & russianheavy.xyz", 
-                    Name = "verlox & russian heavy"
+                    Url = "OrbitOntop#0533 add me", 
+                    Name = "OrbitOntop#0533"
                 }, 
                 Title = new Core.StartupConsoleTitleProperties { 
                     Text = "Lithium Nuker V2"
